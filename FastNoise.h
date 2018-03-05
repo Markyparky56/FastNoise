@@ -213,9 +213,17 @@ public:
 	FN_DECIMAL GetWhiteNoise(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const;
 	FN_DECIMAL GetWhiteNoiseInt(int x, int y, int z, int w) const;
 
+  //5D
+  FN_DECIMAL GetSimplex(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const;
+
+  //6D
+  FN_DECIMAL GetSimplex(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const;
+
 private:
 	unsigned char m_perm[512];
 	unsigned char m_perm12[512];
+  unsigned char m_perm80[512]; // For 5D Noise
+  unsigned char m_perm192[512]; // For 6D Noise
 
 	int m_seed = 1337;
 	FN_DECIMAL m_frequency = FN_DECIMAL(0.01);
@@ -295,10 +303,18 @@ private:
 	//4D
 	FN_DECIMAL SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const;
 
+  //5D
+  FN_DECIMAL SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const;
+
+  //6D
+  FN_DECIMAL SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const;
+
 	inline unsigned char Index2D_12(unsigned char offset, int x, int y) const;
 	inline unsigned char Index3D_12(unsigned char offset, int x, int y, int z) const;
 	inline unsigned char Index4D_32(unsigned char offset, int x, int y, int z, int w) const;
-	inline unsigned char Index2D_256(unsigned char offset, int x, int y) const;
+  inline unsigned char Index5D_80(unsigned char offset, int x, int y, int z, int w, int v) const;
+  inline unsigned char Index6D_192(unsigned char offset, int x, int y, int z, int w, int v, int u) const;
+  inline unsigned char Index2D_256(unsigned char offset, int x, int y) const;
 	inline unsigned char Index3D_256(unsigned char offset, int x, int y, int z) const;
 	inline unsigned char Index4D_256(unsigned char offset, int x, int y, int z, int w) const;
 
@@ -306,6 +322,9 @@ private:
 	inline FN_DECIMAL ValCoord3DFast(unsigned char offset, int x, int y, int z) const;
 	inline FN_DECIMAL GradCoord2D(unsigned char offset, int x, int y, FN_DECIMAL xd, FN_DECIMAL yd) const;
 	inline FN_DECIMAL GradCoord3D(unsigned char offset, int x, int y, int z, FN_DECIMAL xd, FN_DECIMAL yd, FN_DECIMAL zd) const;
-	inline FN_DECIMAL GradCoord4D(unsigned char offset, int x, int y, int z, int w, FN_DECIMAL xd, FN_DECIMAL yd, FN_DECIMAL zd, FN_DECIMAL wd) const;
+	inline FN_DECIMAL GradCoord4D(unsigned char offset, int x, int y, int z, int w, FN_DECIMAL xd, FN_DECIMAL yd, FN_DECIMAL zd, FN_DECIMAL wd) const; 
+  inline FN_DECIMAL GradCoord5D(unsigned char offset, int x, int y, int z, int w, int v, FN_DECIMAL xd, FN_DECIMAL yd, FN_DECIMAL zd, FN_DECIMAL wd, FN_DECIMAL vd) const;
+  inline FN_DECIMAL GradCoord6D(unsigned char offset, int x, int y, int z, int w, int v, int u, FN_DECIMAL xd, FN_DECIMAL yd, FN_DECIMAL zd, FN_DECIMAL wd, FN_DECIMAL vd, FN_DECIMAL ud) const;
+
 };
 #endif
