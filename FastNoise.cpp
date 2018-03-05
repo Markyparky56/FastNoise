@@ -1666,6 +1666,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
   if (x0 > z0) rankx++; else rankz++;
   if (x0 > w0) rankx++; else rankw++;
   if (y0 > z0) ranky++; else rankz++;
+  if (y0 > w0) ranky++; else rankw++;
   if (z0 > w0) rankz++; else rankw++;
 
   int i1 = rankx >= 3 ? 1 : 0;
@@ -1877,7 +1878,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
     n5 = t * t * GradCoord5D(offset, i + 1, j + 1, k + 1, l + 1, h + 1, x5, y5, z5, w5, v5);
   }
 
-  return 1 * (n0 + n1 + n2 + n3 + n4 + n5); // TODO: Find value scaler
+  return 8 * (n0 + n1 + n2 + n3 + n4 + n5); // TODO: Find value scaler
 }
 
 static const FN_DECIMAL F6 = (sqrt(FN_DECIMAL(6)) - 1) / 5;
@@ -2062,7 +2063,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
     n6 = t * t * GradCoord6D(offset, i + 1, j + 1, k + 1, l + 1, h + 1, g + 1, x6, y6, z6, w6, v6, u6);
   }
 
-  return 1 * (n0 + n1 + n2 + n3 + n4 + n5 + n6); // TODO: Find value scaler
+  return 7 * (n0 + n1 + n2 + n3 + n4 + n5 + n6); // TODO: Find value scaler
 }
 
 // Cubic Noise
