@@ -619,13 +619,13 @@ FN_DECIMAL FastNoise::GradCoord4D(unsigned char offset, int x, int y, int z, int
 }
 inline FN_DECIMAL FastNoise::GradCoord5D(unsigned char offset, int x, int y, int z, int w, int v, FN_DECIMAL xd, FN_DECIMAL yd, FN_DECIMAL zd, FN_DECIMAL wd, FN_DECIMAL vd) const
 {
-  unsigned char lutPos = Index5D_80(offset, x, y, z, w, v);
+  unsigned char lutPos = Index5D_80(offset, x, y, z, w, v) * 5;
 
   return xd * GRAD_5D[lutPos] + yd * GRAD_5D[lutPos + 1] + zd * GRAD_5D[lutPos + 2] + wd * GRAD_5D[lutPos + 3] + vd * GRAD_5D[lutPos + 4];
 }
 inline FN_DECIMAL FastNoise::GradCoord6D(unsigned char offset, int x, int y, int z, int w, int v, int u, FN_DECIMAL xd, FN_DECIMAL yd, FN_DECIMAL zd, FN_DECIMAL wd, FN_DECIMAL vd, FN_DECIMAL ud) const
 {
-  unsigned char lutPos = Index6D_192(offset, x, y, z, w, v, u);
+  unsigned char lutPos = Index6D_192(offset, x, y, z, w, v, u) * 6;
 
   return xd * GRAD_6D[lutPos] + yd * GRAD_6D[lutPos + 1] + zd * GRAD_6D[lutPos + 2] + wd * GRAD_6D[lutPos + 3] + vd * GRAD_6D[lutPos + 4] + ud*GRAD_6D[lutPos + 5];
 }
@@ -1891,7 +1891,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
     n5 = t * t * GradCoord5D(offset, i + 1, j + 1, k + 1, l + 1, h + 1, x5, y5, z5, w5, v5);
   }
 
-  return 60 * (n0 + n1 + n2 + n3 + n4 + n5); // TODO: Find value scaler
+  return 8 * (n0 + n1 + n2 + n3 + n4 + n5); // TODO: Find value scaler
 }
 
 static const FN_DECIMAL F6 = (sqrt(FN_DECIMAL(7)) - 1) / 6;
