@@ -1843,7 +1843,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
   FN_DECIMAL w5 = w0 - 1 + 5*G5;
   FN_DECIMAL v5 = v0 - 1 + 5*G5;
 
-  t = FN_DECIMAL(0.5) - x0*x0 - y0*y0 - z0*z0 - w0*w0 - v0*v0;
+  t = FN_DECIMAL(0.8) - x0*x0 - y0*y0 - z0*z0 - w0*w0 - v0*v0;
   if (t < 0) n0 = 0;
   else
   {
@@ -1851,7 +1851,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
     n0 = t*t * GradCoord5D(offset, i, j, k, l, h, x0, y0, z0, w0, v0);
   }
 
-  t = FN_DECIMAL(0.5) - x1*x1 - y1*y1 - z1*z1 - w1*w1 - v1*v1;
+  t = FN_DECIMAL(0.8) - x1*x1 - y1*y1 - z1*z1 - w1*w1 - v1*v1;
   if (t < 0) n1 = 0;
   else
   {
@@ -1859,7 +1859,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
     n1 = t*t * GradCoord5D(offset, i + i1, j + j1, k + k1, l + l1, h + h1, x1, y1, z1, w1, v1);
   }
 
-  t = FN_DECIMAL(0.5) - x2*x2 - y2*y2 - z2*z2 - w2*w2 - v2*v2;
+  t = FN_DECIMAL(0.8) - x2*x2 - y2*y2 - z2*z2 - w2*w2 - v2*v2;
   if (t < 0) n2 = 0;
   else
   {
@@ -1867,7 +1867,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
     n2 = t*t * GradCoord5D(offset, i + i2, j + j2, k + k2, l + l2, h + h2, x2, y2, z2, w2, v2);
   }
 
-  t = FN_DECIMAL(0.5) - x3*x3 - y3*y3 - z3*z3 - w3*w3 - v3*v3;
+  t = FN_DECIMAL(0.8) - x3*x3 - y3*y3 - z3*z3 - w3*w3 - v3*v3;
   if (t < 0) n3 = 0;
   else
   {
@@ -1875,7 +1875,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
     n3 = t*t * GradCoord5D(offset, i + i3, j + j3, k + k3, l + l3, h + h3, x3, y3, z3, w3, v3);
   }
 
-  t = FN_DECIMAL(0.5) - x4*x4 - y4*y4 - z4*z4 - w4*w4 - v4*v4;
+  t = FN_DECIMAL(0.8) - x4*x4 - y4*y4 - z4*z4 - w4*w4 - v4*v4;
   if (t < 0) n4 = 0;
   else
   {
@@ -1883,7 +1883,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
     n4 = t*t * GradCoord5D(offset, i + i4, j + j4, k + k4, l + l4, h + h4, x4, y4, z4, w4, v4);
   }
 
-  t = FN_DECIMAL(0.5) - x5*x5 - y5*y5 - z5*z5 - w4*w4 - v5*v5;
+  t = FN_DECIMAL(0.8) - x5*x5 - y5*y5 - z5*z5 - w4*w4 - v5*v5;
   if (t < 0) n5 = 0;
   else
   {
@@ -1891,7 +1891,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
     n5 = t * t * GradCoord5D(offset, i + 1, j + 1, k + 1, l + 1, h + 1, x5, y5, z5, w5, v5);
   }
 
-  return 8 * (n0 + n1 + n2 + n3 + n4 + n5); // TODO: Find value scaler
+  return 6 * (n0 + n1 + n2 + n3 + n4 + n5); // TODO: Find value scaler
 }
 
 static const FN_DECIMAL F6 = (sqrt(FN_DECIMAL(7)) - 1) / 6;
