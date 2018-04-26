@@ -1750,24 +1750,25 @@ static const FN_DECIMAL G5 = (6 - sqrt(FN_DECIMAL(6))) / 30;
 
 FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const
 {
-  FN_DECIMAL n0, n1, n2, n3, n4, n5;
-  FN_DECIMAL t = (x + y + z + w + v) * F5;
-  int i = FastFloor(x + t);
-  int j = FastFloor(y + t);
-  int k = FastFloor(z + t);
-  int l = FastFloor(w + t);
-  int h = FastFloor(v + t);
-  t = (i + j + k + l + h) * G5;
-  FN_DECIMAL X0 = i - t;
-  FN_DECIMAL Y0 = j - t;
-  FN_DECIMAL Z0 = k - t;
-  FN_DECIMAL W0 = l - t;
-  FN_DECIMAL V0 = h - t;
-  FN_DECIMAL x0 = x - X0;
-  FN_DECIMAL y0 = y - Y0;
-  FN_DECIMAL z0 = z - Z0;
-  FN_DECIMAL w0 = w - W0;
-  FN_DECIMAL v0 = v - V0;
+  float c0, c1, c2, c3, c4, c5; // Contributions
+  float skew = (x + y + z + w + v) * F5;
+  float sx = x + skew;
+  float sy = y + skew;
+  float sz = z + skew;
+  float sw = w + skew;
+  float sv = v + skew;
+
+  int ix = FastFloor(sx);
+  int iy = FastFloor(sy);
+  int iz = FastFloor(sz);
+  int iw = FastFloor(sw);
+  int iv = FastFloor(sv);
+
+  float X = sx - ix;
+  float Y = sy - iy;
+  float Z = sz - iz;
+  float W = sw - iw;
+  float V = sv - iv;
 
   int rankx = 0;
   int ranky = 0;
@@ -1775,123 +1776,150 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
   int rankw = 0;
   int rankv = 0;
 
-  if (x0 > y0) rankx++; else ranky++;
-  if (x0 > z0) rankx++; else rankz++;
-  if (x0 > w0) rankx++; else rankw++;
-  if (x0 > v0) rankx++; else rankv++;
+  if (X > Y) rankx++; else ranky++;
+  if (X > Z) rankx++; else rankz++;
+  if (X > W) rankx++; else rankw++;
+  if (X > V) rankx++; else rankv++;
 
-  if (y0 > z0) ranky++; else rankz++;
-  if (y0 > w0) ranky++; else rankw++;
-  if (y0 > v0) ranky++; else rankv++;
+  if (Y > Z) ranky++; else rankz++;
+  if (Y > W) ranky++; else rankw++;
+  if (Y > V) ranky++; else rankv++;
 
-  if (z0 > w0) rankz++; else rankw++;
-  if (z0 > v0) rankz++; else rankv++;
+  if (Z > W) rankz++; else rankw++;
+  if (Z > V) rankz++; else rankv++;
 
-  if (w0 > v0) rankw++; else rankv++;
+  if (W > V) rankw++; else rankv++;
 
-  int i1 = rankx >= 4 ? 1 : 0;
-  int j1 = ranky >= 4 ? 1 : 0;
-  int k1 = rankz >= 4 ? 1 : 0;
-  int l1 = rankw >= 4 ? 1 : 0;
-  int h1 = rankv >= 4 ? 1 : 0;
+  int i1 = (rankx >= 4) ? 1 : 0;
+  int j1 = (ranky >= 4) ? 1 : 0;
+  int k1 = (rankz >= 4) ? 1 : 0;
+  int l1 = (rankw >= 4) ? 1 : 0;
+  int h1 = (rankv >= 4) ? 1 : 0;
 
-  int i2 = rankx >= 3 ? 1 : 0;
-  int j2 = ranky >= 3 ? 1 : 0;
-  int k2 = rankz >= 3 ? 1 : 0;
-  int l2 = rankw >= 3 ? 1 : 0;
-  int h2 = rankv >= 3 ? 1 : 0;
+  int i2 = (rankx >= 3) ? 1 : 0;
+  int j2 = (ranky >= 3) ? 1 : 0;
+  int k2 = (rankz >= 3) ? 1 : 0;
+  int l2 = (rankw >= 3) ? 1 : 0;
+  int h2 = (rankv >= 3) ? 1 : 0;
 
-  int i3 = rankx >= 2 ? 1 : 0;
-  int j3 = ranky >= 2 ? 1 : 0;
-  int k3 = rankz >= 2 ? 1 : 0;
-  int l3 = rankw >= 2 ? 1 : 0;
-  int h3 = rankv >= 2 ? 1 : 0;
+  int i3 = (rankx >= 2) ? 1 : 0;
+  int j3 = (ranky >= 2) ? 1 : 0;
+  int k3 = (rankz >= 2) ? 1 : 0;
+  int l3 = (rankw >= 2) ? 1 : 0;
+  int h3 = (rankv >= 2) ? 1 : 0;
 
-  int i4 = rankx >= 1 ? 1 : 0;
-  int j4 = ranky >= 1 ? 1 : 0;
-  int k4 = rankz >= 1 ? 1 : 0;
-  int l4 = rankw >= 1 ? 1 : 0;
-  int h4 = rankv >= 1 ? 1 : 0;
+  int i4 = (rankx >= 1) ? 1 : 0;
+  int j4 = (ranky >= 1) ? 1 : 0;
+  int k4 = (rankz >= 1) ? 1 : 0;
+  int l4 = (rankw >= 1) ? 1 : 0;
+  int h4 = (rankv >= 1) ? 1 : 0;
 
-  FN_DECIMAL x1 = x0 - i1 + G5;
-  FN_DECIMAL y1 = y0 - j1 + G5;
-  FN_DECIMAL z1 = z0 - k1 + G5;
-  FN_DECIMAL w1 = w0 - l1 + G5;
-  FN_DECIMAL v1 = v0 - h1 + G5;
+  float unskew;
+  float f;
 
-  FN_DECIMAL x2 = x0 - i2 + 2*G5;
-  FN_DECIMAL y2 = y0 - j2 + 2*G5;
-  FN_DECIMAL z2 = z0 - k2 + 2*G5;
-  FN_DECIMAL w2 = w0 - l2 + 2*G5;
-  FN_DECIMAL v2 = v0 - h2 + 2*G5;
+  unskew = (ix + iy + iz + iw + iv) * G5;
+  float x0 = x - ix + unskew;
+  float y0 = y - iy + unskew;
+  float z0 = z - iz + unskew;
+  float w0 = w - iw + unskew;
+  float v0 = v - iv + unskew;
 
-  FN_DECIMAL x3 = x0 - i3 + 3*G5;
-  FN_DECIMAL y3 = y0 - j3 + 3*G5;
-  FN_DECIMAL z3 = z0 - k3 + 3*G5;
-  FN_DECIMAL w3 = w0 - l3 + 3*G5;
-  FN_DECIMAL v3 = v0 - h3 + 3*G5;
+  unskew = (ix + iy + iz + iw + iv + 1) * G5;
+  float x1 = x - (ix + i1) + unskew;
+  float y1 = y - (iy + j1) + unskew;
+  float z1 = z - (iz + k1) + unskew;
+  float w1 = w - (iw + l1) + unskew;
+  float v1 = v - (iv + h1) + unskew;
 
-  FN_DECIMAL x4 = x0 - i4 + 4*G5;
-  FN_DECIMAL y4 = y0 - j4 + 4*G5;
-  FN_DECIMAL z4 = z0 - k4 + 4*G5;
-  FN_DECIMAL w4 = w0 - l4 + 4*G5;
-  FN_DECIMAL v4 = v0 - h4 + 4*G5;
+  unskew = (ix + iy + iz + iw + iv + 2) * G5;
+  float x2 = x - (ix + i2) + unskew;
+  float y2 = y - (iy + j2) + unskew;
+  float z2 = z - (iz + k2) + unskew;
+  float w2 = w - (iw + l2) + unskew;
+  float v2 = v - (iv + h2) + unskew;
 
-  FN_DECIMAL x5 = x0 - 1 + 5*G5;
-  FN_DECIMAL y5 = y0 - 1 + 5*G5;
-  FN_DECIMAL z5 = z0 - 1 + 5*G5;
-  FN_DECIMAL w5 = w0 - 1 + 5*G5;
-  FN_DECIMAL v5 = v0 - 1 + 5*G5;
+  unskew = (ix + iy + iz + iw + iv + 3) * G5;
+  float x3 = x - (ix + i3) + unskew;
+  float y3 = y - (iy + j3) + unskew;
+  float z3 = z - (iz + k3) + unskew;
+  float w3 = w - (iw + l3) + unskew;
+  float v3 = v - (iv + h3) + unskew;
 
-  t = FN_DECIMAL(0.8) - x0*x0 - y0*y0 - z0*z0 - w0*w0 - v0*v0;
-  if (t < 0) n0 = 0;
-  else
+  unskew = (ix + iy + iz + iw + iv + 4) * G5;
+  float x4 = x - (ix + i4) + unskew;
+  float y4 = y - (iy + j4) + unskew;
+  float z4 = z - (iz + k4) + unskew;
+  float w4 = w - (iw + l4) + unskew;
+  float v4 = v - (iv + h4) + unskew;
+
+  unskew = (ix + iy + iz + iw + iv + 5) * G5;
+  float x5 = x - (ix + 1) + unskew;
+  float y5 = y - (iy + 1) + unskew;
+  float z5 = z - (iz + 1) + unskew;
+  float w5 = w - (iw + 1) + unskew;
+  float v5 = v - (iv + 1) + unskew;
+
+  // Contribution 0
+  f = 0.5f - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0;
+  if (f > 0.f)
   {
-    t *= t;
-    n0 = t*t * GradCoord5D(offset, i, j, k, l, h, x0, y0, z0, w0, v0);
+    f = (f * f * f);
+    int i = perm80[perm80[perm80[perm80[perm80[ix & 255] + iy & 255] + iz & 255] + iw & 255] + iv & 255] * 5;
+    c0 = f * (GRAD_5D[i] * x0 + GRAD_5D[i + 1] * y0 + GRAD_5D[i + 2] * z0 + GRAD_5D[i + 3] * w0 + GRAD_5D[i + 4] * v0);
   }
+  else c0 = 0.f;
 
-  t = FN_DECIMAL(0.8) - x1*x1 - y1*y1 - z1*z1 - w1*w1 - v1*v1;
-  if (t < 0) n1 = 0;
-  else
+  // Contribution 1
+  f = 0.5f - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1;
+  if (f > 0.f)
   {
-    t *= t;
-    n1 = t*t * GradCoord5D(offset, i + i1, j + j1, k + k1, l + l1, h + h1, x1, y1, z1, w1, v1);
+    f = (f * f * f);
+    int i = perm80[perm80[perm80[perm80[perm80[(ix + i1) & 255] + (iy + j1) & 255] + (iz + k1) & 255] + (iw + l1) & 255] + (iv + h1) & 255] * 5;
+    c1 = f * (GRAD_5D[i] * x1 + GRAD_5D[i + 1] * y1 + GRAD_5D[i + 2] * z1 + GRAD_5D[i + 3] * w1 + GRAD_5D[i + 4] * v1);
   }
+  else c1 = 0.f;
 
-  t = FN_DECIMAL(0.8) - x2*x2 - y2*y2 - z2*z2 - w2*w2 - v2*v2;
-  if (t < 0) n2 = 0;
-  else
+  // Contribution 2
+  f = 0.5f - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2;
+  if (f > 0.f)
   {
-    t *= t;
-    n2 = t*t * GradCoord5D(offset, i + i2, j + j2, k + k2, l + l2, h + h2, x2, y2, z2, w2, v2);
+    f = (f * f * f);
+    int i = perm80[perm80[perm80[perm80[perm80[(ix + i2) & 255] + (iy + j2) & 255] + (iz + k2) & 255] + (iw + l2) & 255] + (iv + h2) & 255] * 5;
+    c2 = f * (GRAD_5D[i] * x2 + GRAD_5D[i + 1] * y2 + GRAD_5D[i + 2] * z2 + GRAD_5D[i + 3] * w2 + GRAD_5D[i + 4] * v2);
   }
+  else c2 = 0.f;
 
-  t = FN_DECIMAL(0.8) - x3*x3 - y3*y3 - z3*z3 - w3*w3 - v3*v3;
-  if (t < 0) n3 = 0;
-  else
+  // Contribution 3
+  f = 0.5f - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3;
+  if (f > 0.f)
   {
-    t *= t;
-    n3 = t*t * GradCoord5D(offset, i + i3, j + j3, k + k3, l + l3, h + h3, x3, y3, z3, w3, v3);
+    f = (f * f * f);
+    int i = perm80[perm80[perm80[perm80[perm80[(ix + i3) & 255] + (iy + j3) & 255] + (iz + k3) & 255] + (iw + l3) & 255] + (iv + h3) & 255] * 5;
+    c3 = f * (GRAD_5D[i] * x3 + GRAD_5D[i + 1] * y3 + GRAD_5D[i + 2] * z3 + GRAD_5D[i + 3] * w3 + GRAD_5D[i + 4] * v3);
   }
+  else c3 = 0.f;
 
-  t = FN_DECIMAL(0.8) - x4*x4 - y4*y4 - z4*z4 - w4*w4 - v4*v4;
-  if (t < 0) n4 = 0;
-  else
+  // Contribution 4
+  f = 0.5f - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4;
+  if (f > 0.f)
   {
-    t *= t;
-    n4 = t*t * GradCoord5D(offset, i + i4, j + j4, k + k4, l + l4, h + h4, x4, y4, z4, w4, v4);
+    f = (f * f * f);
+    int i = perm80[perm80[perm80[perm80[perm80[(ix + i4) & 255] + (iy + j4) & 255] + (iz + k4) & 255] + (iw + l4) & 255] + (iv + h4) & 255] * 5;
+    c4 = f * (GRAD_5D[i] * x4 + GRAD_5D[i + 1] * y4 + GRAD_5D[i + 2] * z4 + GRAD_5D[i + 3] * w4 + GRAD_5D[i + 4] * v4);
   }
+  else c4 = 0.f;
 
-  t = FN_DECIMAL(0.8) - x5*x5 - y5*y5 - z5*z5 - w4*w4 - v5*v5;
-  if (t < 0) n5 = 0;
-  else
+  // Contribution 5
+  f = 0.5f - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5;
+  if (f > 0.f)
   {
-    t *= t;
-    n5 = t * t * GradCoord5D(offset, i + 1, j + 1, k + 1, l + 1, h + 1, x5, y5, z5, w5, v5);
+    f = (f * f * f);
+    int i = perm80[perm80[perm80[perm80[perm80[(ix + 1) & 255] + (iy + 1) & 255] + (iz + 1) & 255] + (iw + 1) & 255] + (iv + 1) & 255] * 5;
+    c5 = f * (GRAD_5D[i] * x5 + GRAD_5D[i + 1] * y5 + GRAD_5D[i + 2] * z5 + GRAD_5D[i + 3] * w5 + GRAD_5D[i + 4] * v5);;
   }
+  else c5 = 0.f;
 
-  return 6 * (n0 + n1 + n2 + n3 + n4 + n5); // TODO: Find value scaler
+  return (c0 + c1 + c2 + c3 + c4 + c5) * 23.25f;
 }
 
 static const FN_DECIMAL F6 = (sqrt(FN_DECIMAL(7)) - 1) / 6;
@@ -1899,27 +1927,28 @@ static const FN_DECIMAL G6 = (7 - sqrt(FN_DECIMAL(7))) / 42;
 
 FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const
 {
-  FN_DECIMAL n0, n1, n2, n3, n4, n5, n6;
-  FN_DECIMAL t = (x + y + z + w + v + u) * F6;
-  int i = FastFloor(x + t);
-  int j = FastFloor(y + t);
-  int k = FastFloor(z + t);
-  int l = FastFloor(w + t);
-  int h = FastFloor(v + t);
-  int g = FastFloor(u + t);
-  t = (i + j + k + l + h + g) * G6;
-  FN_DECIMAL X0 = i - t;
-  FN_DECIMAL Y0 = j - t;
-  FN_DECIMAL Z0 = k - t;
-  FN_DECIMAL W0 = l - t;
-  FN_DECIMAL V0 = h - t;
-  FN_DECIMAL U0 = g - t;
-  FN_DECIMAL x0 = x - X0;
-  FN_DECIMAL y0 = y - Y0;
-  FN_DECIMAL z0 = z - Z0;
-  FN_DECIMAL w0 = w - W0;
-  FN_DECIMAL v0 = v - V0;
-  FN_DECIMAL u0 = u - U0;
+  float c0, c1, c2, c3, c4, c5, c6; // Contributions
+  float skew = (x + y + z + w + v + u) * F6;
+  float sx = x + skew;
+  float sy = y + skew;
+  float sz = z + skew;
+  float sw = w + skew;
+  float sv = v + skew;
+  float su = u + skew;
+
+  int ix = FastFloor(sx);
+  int iy = FastFloor(sy);
+  int iz = FastFloor(sz);
+  int iw = FastFloor(sw);
+  int iv = FastFloor(sv);
+  int iu = FastFloor(su);
+
+  float X = sx - ix;
+  float Y = sy - iy;
+  float Z = sz - iz;
+  float W = sw - iw;
+  float V = sv - iv;
+  float U = su - iu;
 
   int rankx = 0;
   int ranky = 0;
@@ -1928,158 +1957,191 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
   int rankv = 0;
   int ranku = 0;
 
-  if (x0 > y0) rankx++; else ranky++;
-  if (x0 > z0) rankx++; else rankz++;
-  if (x0 > w0) rankx++; else rankw++;
-  if (x0 > v0) rankx++; else rankv++;
-  if (x0 > u0) rankx++; else ranku++;
+  if (X > Y) rankx++; else ranky++;
+  if (X > Z) rankx++; else rankz++;
+  if (X > W) rankx++; else rankw++;
+  if (X > V) rankx++; else rankv++;
+  if (X > U) rankx++; else ranku++;
 
-  if (y0 > z0) ranky++; else rankz++;
-  if (y0 > w0) ranky++; else rankw++;
-  if (y0 > v0) ranky++; else rankv++;
-  if (y0 > u0) ranky++; else ranku++;
+  if (Y > Z) ranky++; else rankz++;
+  if (Y > W) ranky++; else rankw++;
+  if (Y > V) ranky++; else rankv++;
+  if (Y > U) ranky++; else ranku++;
 
-  if (z0 > w0) rankz++; else rankw++;
-  if (z0 > v0) rankz++; else rankv++;
-  if (z0 > u0) rankz++; else ranku++;
+  if (Z > W) rankz++; else rankw++;
+  if (Z > V) rankz++; else rankv++;
+  if (Z > U) rankz++; else ranku++;
 
-  if (w0 > v0) rankw++; else rankv++;
-  if (w0 > u0) rankw++; else ranku++;
+  if (W > V) rankw++; else rankv++;
+  if (W > U) rankw++; else ranku++;
 
-  int i1 = rankx >= 5 ? 1 : 0;
-  int j1 = ranky >= 5 ? 1 : 0;
-  int k1 = rankz >= 5 ? 1 : 0;
-  int l1 = rankw >= 5 ? 1 : 0;
-  int h1 = rankv >= 5 ? 1 : 0;
-  int g1 = ranku >= 5 ? 1 : 0;
+  if (V > U) rankv++; else ranku++;
 
-  int i2 = rankx >= 4 ? 1 : 0;
-  int j2 = ranky >= 4 ? 1 : 0;
-  int k2 = rankz >= 4 ? 1 : 0;
-  int l2 = rankw >= 4 ? 1 : 0;
-  int h2 = rankv >= 4 ? 1 : 0;
-  int g2 = ranku >= 4 ? 1 : 0;
+  int i1 = (rankx >= 5) ? 1 : 0;
+  int j1 = (ranky >= 5) ? 1 : 0;
+  int k1 = (rankz >= 5) ? 1 : 0;
+  int l1 = (rankw >= 5) ? 1 : 0;
+  int h1 = (rankv >= 5) ? 1 : 0;
+  int g1 = (ranku >= 5) ? 1 : 0;
 
-  int i3 = rankx >= 3 ? 1 : 0;
-  int j3 = ranky >= 3 ? 1 : 0;
-  int k3 = rankz >= 3 ? 1 : 0;
-  int l3 = rankw >= 3 ? 1 : 0;
-  int h3 = rankv >= 3 ? 1 : 0;
-  int g3 = ranku >= 3 ? 1 : 0;
+  int i2 = (rankx >= 4) ? 1 : 0;
+  int j2 = (ranky >= 4) ? 1 : 0;
+  int k2 = (rankz >= 4) ? 1 : 0;
+  int l2 = (rankw >= 4) ? 1 : 0;
+  int h2 = (rankv >= 4) ? 1 : 0;
+  int g2 = (ranku >= 4) ? 1 : 0;
 
-  int i4 = rankx >= 2 ? 1 : 0;
-  int j4 = ranky >= 2 ? 1 : 0;
-  int k4 = rankz >= 2 ? 1 : 0;
-  int l4 = rankw >= 2 ? 1 : 0;
-  int h4 = rankv >= 2 ? 1 : 0;
-  int g4 = ranku >= 2 ? 1 : 0;
+  int i3 = (rankx >= 3) ? 1 : 0;
+  int j3 = (ranky >= 3) ? 1 : 0;
+  int k3 = (rankz >= 3) ? 1 : 0;
+  int l3 = (rankw >= 3) ? 1 : 0;
+  int h3 = (rankv >= 3) ? 1 : 0;
+  int g3 = (ranku >= 3) ? 1 : 0;
 
-  int i5 = rankx >= 1 ? 1 : 0;
-  int j5 = ranky >= 1 ? 1 : 0;
-  int k5 = rankz >= 1 ? 1 : 0;
-  int l5 = rankw >= 1 ? 1 : 0;
-  int h5 = rankv >= 1 ? 1 : 0;
-  int g5 = ranku >= 1 ? 1 : 0;
+  int i4 = (rankx >= 2) ? 1 : 0;
+  int j4 = (ranky >= 2) ? 1 : 0;
+  int k4 = (rankz >= 2) ? 1 : 0;
+  int l4 = (rankw >= 2) ? 1 : 0;
+  int h4 = (rankv >= 2) ? 1 : 0;
+  int g4 = (ranku >= 2) ? 1 : 0;
 
-  FN_DECIMAL x1 = x0 - i1 + G6;
-  FN_DECIMAL y1 = y0 - j1 + G6;
-  FN_DECIMAL z1 = z0 - k1 + G6;
-  FN_DECIMAL w1 = w0 - l1 + G6;
-  FN_DECIMAL v1 = v0 - h1 + G6;
-  FN_DECIMAL u1 = u0 - g1 + G6;
+  int i5 = (rankx >= 1) ? 1 : 0;
+  int j5 = (ranky >= 1) ? 1 : 0;
+  int k5 = (rankz >= 1) ? 1 : 0;
+  int l5 = (rankw >= 1) ? 1 : 0;
+  int h5 = (rankv >= 1) ? 1 : 0;
+  int g5 = (ranku >= 1) ? 1 : 0;
 
-  FN_DECIMAL x2 = x0 - i2 + 2*G6;
-  FN_DECIMAL y2 = y0 - j2 + 2*G6;
-  FN_DECIMAL z2 = z0 - k2 + 2*G6;
-  FN_DECIMAL w2 = w0 - l2 + 2*G6;
-  FN_DECIMAL v2 = v0 - h2 + 2*G6;
-  FN_DECIMAL u2 = u0 - g2 + 2*G6;
+  float unskew;
+  float f;
 
-  FN_DECIMAL x3 = x0 - i3 + 3*G6;
-  FN_DECIMAL y3 = y0 - j3 + 3*G6;
-  FN_DECIMAL z3 = z0 - k3 + 3*G6;
-  FN_DECIMAL w3 = w0 - l3 + 3*G6;
-  FN_DECIMAL v3 = v0 - h3 + 3*G6;
-  FN_DECIMAL u3 = u0 - g3 + 3*G6;
+  unskew = (ix + iy + iz + iw + iv + iu) * G6;
+  float x0 = x - ix + unskew;
+  float y0 = y - iy + unskew;
+  float z0 = z - iz + unskew;
+  float w0 = w - iw + unskew;
+  float v0 = v - iv + unskew;
+  float u0 = u - iu + unskew;
 
-  FN_DECIMAL x4 = x0 - i4 + 4*G6;
-  FN_DECIMAL y4 = y0 - j4 + 4*G6;
-  FN_DECIMAL z4 = z0 - k4 + 4*G6;
-  FN_DECIMAL w4 = w0 - l4 + 4*G6;
-  FN_DECIMAL v4 = v0 - h4 + 4*G6;
-  FN_DECIMAL u4 = u0 - g4 + 4*G6;
+  unskew = (ix + iy + iz + iw + iv + iu + 1) * G6;
+  float x1 = x - (ix + i1) + unskew;
+  float y1 = y - (iy + j1) + unskew;
+  float z1 = z - (iz + k1) + unskew;
+  float w1 = w - (iw + l1) + unskew;
+  float v1 = v - (iv + h1) + unskew;
+  float u1 = u - (iu + g1) + unskew;
 
-  FN_DECIMAL x5 = x0 - i4 + 5*G6;
-  FN_DECIMAL y5 = y0 - j4 + 5*G6;
-  FN_DECIMAL z5 = z0 - k4 + 5*G6;
-  FN_DECIMAL w5 = w0 - l4 + 5*G6;
-  FN_DECIMAL v5 = v0 - h4 + 5*G6;
-  FN_DECIMAL u5 = u0 - g4 + 5*G6;
+  unskew = (ix + iy + iz + iw + iv + iu + 2) * G6;
+  float x2 = x - (ix + i2) + unskew;
+  float y2 = y - (iy + j2) + unskew;
+  float z2 = z - (iz + k2) + unskew;
+  float w2 = w - (iw + l2) + unskew;
+  float v2 = v - (iv + h2) + unskew;
+  float u2 = u - (iu + g2) + unskew;
 
-  FN_DECIMAL x6 = x0 - 1 + 6*G6;
-  FN_DECIMAL y6 = y0 - 1 + 6*G6;
-  FN_DECIMAL z6 = z0 - 1 + 6*G6;
-  FN_DECIMAL w6 = w0 - 1 + 6*G6;
-  FN_DECIMAL v6 = v0 - 1 + 6*G6;
-  FN_DECIMAL u6 = u0 - 1 + 6*G6;
+  unskew = (ix + iy + iz + iw + iv + iu + 3) * G6;
+  float x3 = x - (ix + i3) + unskew;
+  float y3 = y - (iy + j3) + unskew;
+  float z3 = z - (iz + k3) + unskew;
+  float w3 = w - (iw + l3) + unskew;
+  float v3 = v - (iv + h3) + unskew;
+  float u3 = u - (iu + g3) + unskew;
 
-  t = FN_DECIMAL(0.5) - x0*x0 - y0*y0 - z0*z0 - w0*w0 - v0*v0 - u0*u0;
-  if (t < 0) n0 = 0;
-  else
+  unskew = (ix + iy + iz + iw + iv + iu + 4) * G6;
+  float x4 = x - (ix + i4) + unskew;
+  float y4 = y - (iy + j4) + unskew;
+  float z4 = z - (iz + k4) + unskew;
+  float w4 = w - (iw + l4) + unskew;
+  float v4 = v - (iv + h4) + unskew;
+  float u4 = u - (iu + g4) + unskew;
+
+  unskew = (ix + iy + iz + iw + iv + iu + 5) * G6;
+  float x5 = x - (ix + i5) + unskew;
+  float y5 = y - (iy + j5) + unskew;
+  float z5 = z - (iz + k5) + unskew;
+  float w5 = w - (iw + l5) + unskew;
+  float v5 = v - (iv + h5) + unskew;
+  float u5 = u - (iu + g5) + unskew;
+
+  unskew = (ix + iy + iz + iw + iv + iu + 6) * G6;
+  float x6 = x - (ix + 1) + unskew;
+  float y6 = y - (iy + 1) + unskew;
+  float z6 = z - (iz + 1) + unskew;
+  float w6 = w - (iw + 1) + unskew;
+  float v6 = v - (iv + 1) + unskew;
+  float u6 = u - (iu + 1) + unskew;
+
+  // Contribution 0
+  f = 0.5f - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0 - u0 * u0;
+  if (f > 0.f)
   {
-    t *= t;
-    n0 = t * t * GradCoord6D(offset, i, j, k, l, h, g, x0, y0, z0, w0, v0, u0);
+    f = (f * f * f);
+    int i = perm192[perm192[perm192[perm192[perm192[perm192[(ix & 255)] + (iy & 255)] + (iz & 255)] + (iw & 255)] + (iv & 255)] + (iu & 255)] * 6;
+    c0 = f * (GRAD_6D[i] * x0 + GRAD_6D[i + 1] * y0 + GRAD_6D[i + 2] * z0 + GRAD_6D[i + 3] * w0 + GRAD_6D[i + 4] * v0 + GRAD_6D[i + 5] * u0);
   }
+  else c0 = 0.f;
 
-  t = FN_DECIMAL(0.5) - x1*x1 - y1*y1 - z1*z1 - w1*w1 - v1*v1 - u1*u1;
-  if (t < 0) n1 = 0;
-  else
+  // Contribution 1
+  f = 0.5f - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1 - u1 * u1;
+  if (f > 0.f)
   {
-    t *= t;
-    n1 = t * t * GradCoord6D(offset, i + i1, j + j1, k + k1, l + l1, h + h1, g +g1, x1, y1, z1, w1, v1, u1);
+    f = (f * f * f);
+    int i = perm192[perm192[perm192[perm192[perm192[perm192[((ix + i1) & 255)] + ((iy + j1) & 255)] + ((iz + k1) & 255)] + ((iw + l1) & 255)] + ((iv + h1) & 255)] + ((iu + g1) & 255)] * 6;
+    c1 = f * (GRAD_6D[i] * x1 + GRAD_6D[i + 1] * y1 + GRAD_6D[i + 2] * z1 + GRAD_6D[i + 3] * w1 + GRAD_6D[i + 4] * v1 + GRAD_6D[i + 5] * u1);
   }
+  else c1 = 0.f;
 
-  t = FN_DECIMAL(0.5) - x2*x2 - y2*y2 - z2*z2 - w2*w2 - v2*v2 - u2*u2;
-  if (t < 0) n2 = 0;
-  else
+  // Contribution 2
+  f = 0.5f - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2 - u2 * u2;
+  if (f > 0.f)
   {
-    t *= t;
-    n2 = t * t * GradCoord6D(offset, i + i2, j + j2, k + k2, l + l2, h + h2, g + g2, x2, y2, z2, w2, v2, u2);
+    f = (f * f * f);
+    int i = perm192[perm192[perm192[perm192[perm192[perm192[((ix + i2) & 255)] + ((iy + j2) & 255)] + ((iz + k2) & 255)] + ((iw + l2) & 255)] + ((iv + h2) & 255)] + ((iu + g2) & 255)] * 6;
+    c2 = f * (GRAD_6D[i] * x2 + GRAD_6D[i + 1] * y2 + GRAD_6D[i + 2] * z2 + GRAD_6D[i + 3] * w2 + GRAD_6D[i + 4] * v2 + GRAD_6D[i + 5] * u2);
   }
+  else c2 = 0.f;
 
-  t = FN_DECIMAL(0.5) - x3*x3 - y3*y3 - z3*z3 - w3*w3 - v3*v3 - u3*u3;
-  if (t < 0) n3 = 0;
-  else
+  // Contribution 3
+  f = 0.5f - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3 - u3 * u3;
+  if (f > 0.f)
   {
-    t *= t;
-    n3 = t * t * GradCoord6D(offset, i + i3, j + j3, k + k3, l + l3, h + h3, g + g3, x3, y3, z3, w3, v3, u3);
+    f = (f * f * f);
+    int i = perm192[perm192[perm192[perm192[perm192[perm192[((ix + i3) & 255)] + ((iy + j3) & 255)] + ((iz + k3) & 255)] + ((iw + l3) & 255)] + ((iv + h3) & 255)] + ((iu + g3) & 255)] * 6;
+    c3 = f * (GRAD_6D[i] * x3 + GRAD_6D[i + 1] * y3 + GRAD_6D[i + 2] * z3 + GRAD_6D[i + 3] * w3 + GRAD_6D[i + 4] * v3 + GRAD_6D[i + 5] * u3);
   }
+  else c3 = 0.f;
 
-  t = FN_DECIMAL(0.5) - x4*x4 - y4*y4 - z4*z4 - w4*w4 - v4*v4 - u4*u4;
-  if (t < 0) n4 = 0;
-  else
+  // Contribution 4
+  f = 0.5f - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4 - u4 * u4;
+  if (f > 0.f)
   {
-    t *= t;
-    n4 = t * t * GradCoord6D(offset, i + i4, j + j4, k + k4, l + l4, h + h4, g + g4, x4, y4, z4, w4, v4, u4);
+    f = (f * f * f);
+    int i = perm192[perm192[perm192[perm192[perm192[perm192[((ix + i4) & 255)] + ((iy + j4) & 255)] + ((iz + k4) & 255)] + ((iw + l4) & 255)] + ((iv + h4) & 255)] + ((iu + g4) & 255)] * 6;
+    c4 = f * (GRAD_6D[i] * x4 + GRAD_6D[i + 1] * y4 + GRAD_6D[i + 2] * z4 + GRAD_6D[i + 3] * w4 + GRAD_6D[i + 4] * v4 + GRAD_6D[i + 5] * u4);
   }
+  else c4 = 0.f;
 
-  t = FN_DECIMAL(0.5) - x5*x5 - y5*y5 - z5*z5 - w4*w4 - v5*v5 - u5*u5;
-  if (t < 0) n5 = 0;
-  else
+  // Contribution 5
+  f = 0.5f - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5 - u5 * u5;
+  if (f > 0.f)
   {
-    t *= t;
-    n5 = t * t * GradCoord6D(offset, i + i5, j + j5, k + k5, l + l5, h + h5, g + g5, x5, y5, z5, w5, v5, u5);
+    f = (f * f * f);
+    int i = perm192[perm192[perm192[perm192[perm192[perm192[((ix + i5) & 255)] + ((iy + j5) & 255)] + ((iz + k5) & 255)] + ((iw + l5) & 255)] + ((iv + h5) & 255)] + ((iu + g5) & 255)] * 6;
+    c5 = f * (GRAD_6D[i] * x5 + GRAD_6D[i + 1] * y5 + GRAD_6D[i + 2] * z5 + GRAD_6D[i + 3] * w5 + GRAD_6D[i + 4] * v5 + GRAD_6D[i + 5] * u5);
   }
+  else c5 = 0.f;
 
-  t = FN_DECIMAL(0.5) - x6*x6 - y6*y6 - z6*z6 - w6*w6 - v6*v6 - u6*u6;
-  if (t < 0) n6 = 0;
-  else
+  // Contribution 6
+  f = 0.5f - x6 * x6 - y6 * y6 - z6 * z6 - w6 * w6 - v6 * v6 - u6 * u6;
+  if (f > 0.f)
   {
-    t *= t;
-    n6 = t * t * GradCoord6D(offset, i + 1, j + 1, k + 1, l + 1, h + 1, g + 1, x6, y6, z6, w6, v6, u6);
+    f = (f * f * f);
+    int i = perm192[perm192[perm192[perm192[perm192[perm192[((ix + 1) & 255)] + ((iy + 1) & 255)] + ((iz + 1) & 255)] + ((iw + 1) & 255)] + ((iv + 1) & 255)] + ((iu + 1) & 255)] * 6;
+    c6 = f * (GRAD_6D[i] * x6 + GRAD_6D[i + 1] * y6 + GRAD_6D[i + 2] * z6 + GRAD_6D[i + 3] * w6 + GRAD_6D[i + 4] * v6 + GRAD_6D[i + 5] * u6);
   }
+  else c6 = 0.f;
 
-  return 50 * (n0 + n1 + n2 + n3 + n4 + n5 + n6); // TODO: Find value scaler
+  return (c0 + c1 + c2 + c3 + c4 + c5 + c6) * 21.25f;
 }
 
 // Cubic Noise
