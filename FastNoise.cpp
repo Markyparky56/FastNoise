@@ -1864,7 +1864,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	if (f > 0.f)
 	{
 		f = (f * f * f);
-		unsigned char i = perm80[perm80[perm80[perm80[perm80[(ix & 255)] + (iy & 255)] + (iz & 255)] + (iw & 255)] + (iv & 255) + offset] * 5;
+		unsigned char i = m_perm80[m_perm80[m_perm80[m_perm80[m_perm80[(ix & 255)] + (iy & 255)] + (iz & 255)] + (iw & 255)] + (iv & 255) + offset] * 5;
 		c0 = f * (GRAD_5D[i]*x0 + GRAD_5D[i + 1]*y0 + GRAD_5D[i + 2]*z0 + GRAD_5D[i + 3]*w0 + GRAD_5D[i + 4]*v0);
 	}
 	else c0 = 0.f;
@@ -1874,7 +1874,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	if (f > 0.f)
 	{
 		f = (f * f * f);
-		unsigned char i = perm80[perm80[perm80[perm80[perm80[((ix + i1) & 255)] + ((iy + j1) & 255)] + ((iz + k1) & 255)] + ((iw + l1) & 255)] + ((iv + h1) & 255) + offset] * 5;
+		unsigned char i = m_perm80[m_perm80[m_perm80[m_perm80[m_perm80[((ix + i1) & 255)] + ((iy + j1) & 255)] + ((iz + k1) & 255)] + ((iw + l1) & 255)] + ((iv + h1) & 255) + offset] * 5;
 		c1 = f * (GRAD_5D[i]*x1 + GRAD_5D[i + 1]*y1 + GRAD_5D[i + 2]*z1 + GRAD_5D[i + 3]*w1 + GRAD_5D[i + 4]*v1);
 	}
 	else c1 = 0.f;
@@ -1884,7 +1884,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	if (f > 0.f)
 	{
 		f = (f * f * f);
-		unsigned char i = perm80[perm80[perm80[perm80[perm80[((ix + i2) & 255)] + ((iy + j2) & 255)] + ((iz + k2) & 255)] + ((iw + l2) & 255)] + ((iv + h2) & 255) + offset] * 5;
+		unsigned char i = m_perm80[m_perm80[m_perm80[m_perm80[m_perm80[((ix + i2) & 255)] + ((iy + j2) & 255)] + ((iz + k2) & 255)] + ((iw + l2) & 255)] + ((iv + h2) & 255) + offset] * 5;
 		c2 = f * (GRAD_5D[i]*x2 + GRAD_5D[i + 1]*y2 + GRAD_5D[i + 2]*z2 + GRAD_5D[i + 3]*w2 + GRAD_5D[i + 4]*v2);
 	}
 	else c2 = 0.f;
@@ -1894,7 +1894,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	if (f > 0.f)
 	{
 		f = (f * f * f);
-		unsigned char i = perm80[perm80[perm80[perm80[perm80[((ix + i3) & 255)] + ((iy + j3) & 255)] + ((iz + k3) & 255)] + ((iw + l3) & 255)] + ((iv + h3) & 255) + offset] * 5;
+		unsigned char i = m_perm80[m_perm80[m_perm80[m_perm80[m_perm80[((ix + i3) & 255)] + ((iy + j3) & 255)] + ((iz + k3) & 255)] + ((iw + l3) & 255)] + ((iv + h3) & 255) + offset] * 5;
 		c3 = f * (GRAD_5D[i]*x3 + GRAD_5D[i + 1]*y3 + GRAD_5D[i + 2]*z3 + GRAD_5D[i + 3]*w3 + GRAD_5D[i + 4]*v3);
 	}
 	else c3 = 0.f;
@@ -1904,7 +1904,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	if (f > 0.f)
 	{
 		f = (f * f * f);
-		unsigned char i = perm80[perm80[perm80[perm80[perm80[((ix + i4) & 255)] + ((iy + j4) & 255)] + ((iz + k4) & 255)] + ((iw + l4) & 255)] + ((iv + h4) & 255) + offset] * 5;
+		unsigned char i = m_perm80[m_perm80[m_perm80[m_perm80[m_perm80[((ix + i4) & 255)] + ((iy + j4) & 255)] + ((iz + k4) & 255)] + ((iw + l4) & 255)] + ((iv + h4) & 255) + offset] * 5;
 		c4 = f * (GRAD_5D[i]*x4 + GRAD_5D[i + 1]*y4 + GRAD_5D[i + 2]*z4 + GRAD_5D[i + 3]*w4 + GRAD_5D[i + 4]*v4);
 	}
 	else c4 = 0.f;
@@ -1914,7 +1914,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	if (f > 0.f)
 	{
 		f = (f * f * f);
-		unsigned char i = perm80[perm80[perm80[perm80[perm80[((ix + 1) & 255)] + ((iy + 1) & 255)] + ((iz + 1) & 255)] + ((iw + 1) & 255)] + ((iv + 1) & 255) + offset] * 5;
+		unsigned char i = m_perm80[m_perm80[m_perm80[m_perm80[m_perm80[((ix + 1) & 255)] + ((iy + 1) & 255)] + ((iz + 1) & 255)] + ((iw + 1) & 255)] + ((iv + 1) & 255) + offset] * 5;
 		c5 = f * (GRAD_5D[i]*x5 + GRAD_5D[i + 1]*y5 + GRAD_5D[i + 2]*z5 + GRAD_5D[i + 3]*w5 + GRAD_5D[i + 4]*v5);
 	}
 	else c5 = 0.f;
@@ -2076,7 +2076,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	if (f > 0.f)
 	{
 		f = (f * f * f);
-		unsigned char i = perm192[perm192[perm192[perm192[perm192[perm192[(ix & 255)] + (iy & 255)] + (iz & 255)] + (iw & 255)] + (iv & 255)] + (iu & 255) + offset] * 6;
+		unsigned char i = m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[(ix & 255)] + (iy & 255)] + (iz & 255)] + (iw & 255)] + (iv & 255)] + (iu & 255) + offset] * 6;
 		c0 = f * (GRAD_6D[i] * x0 + GRAD_6D[i + 1] * y0 + GRAD_6D[i + 2] * z0 + GRAD_6D[i + 3] * w0 + GRAD_6D[i + 4] * v0 + GRAD_6D[i + 5] * u0);
 	}
 	else c0 = 0.f;
@@ -2086,7 +2086,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	if (f > 0.f)
 	{
 		f = (f * f * f);
-		unsigned char i = perm192[perm192[perm192[perm192[perm192[perm192[((ix + i1) & 255)] + ((iy + j1) & 255)] + ((iz + k1) & 255)] + ((iw + l1) & 255)] + ((iv + h1) & 255)] + ((iu + g1) & 255) + offset] * 6;
+		unsigned char i = m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[((ix + i1) & 255)] + ((iy + j1) & 255)] + ((iz + k1) & 255)] + ((iw + l1) & 255)] + ((iv + h1) & 255)] + ((iu + g1) & 255) + offset] * 6;
 		c1 = f * (GRAD_6D[i] * x1 + GRAD_6D[i + 1] * y1 + GRAD_6D[i + 2] * z1 + GRAD_6D[i + 3] * w1 + GRAD_6D[i + 4] * v1 + GRAD_6D[i + 5] * u1);
 	}
 	else c1 = 0.f;
@@ -2096,17 +2096,17 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	if (f > 0.f)
 	{
 		f = (f * f * f);
-		unsigned char i = perm192[perm192[perm192[perm192[perm192[perm192[((ix + i2) & 255)] + ((iy + j2) & 255)] + ((iz + k2) & 255)] + ((iw + l2) & 255)] + ((iv + h2) & 255)] + ((iu + g2) & 255) + offset] * 6;
+		unsigned char i = m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[((ix + i2) & 255)] + ((iy + j2) & 255)] + ((iz + k2) & 255)] + ((iw + l2) & 255)] + ((iv + h2) & 255)] + ((iu + g2) & 255) + offset] * 6;
 		c2 = f * (GRAD_6D[i] * x2 + GRAD_6D[i + 1] * y2 + GRAD_6D[i + 2] * z2 + GRAD_6D[i + 3] * w2 + GRAD_6D[i + 4] * v2 + GRAD_6D[i + 5] * u2);
 	}
 	else c2 = 0.f;
 
 	// Contribution 3
-	f = 0.5f - x3*x3 - y3 y3 - z3*z3 - w3*w3 - v3*v3 - u3*u3;
+	f = 0.5f - x3*x3 - y3*y3 - z3*z3 - w3*w3 - v3*v3 - u3*u3;
 	if (f > 0.f)
 	{
 		f = (f * f * f);
-		unsigned char i = perm192[perm192[perm192[perm192[perm192[perm192[((ix + i3) & 255)] + ((iy + j3) & 255)] + ((iz + k3) & 255)] + ((iw + l3) & 255)] + ((iv + h3) & 255)] + ((iu + g3) & 255) + offset] * 6;
+		unsigned char i = m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[((ix + i3) & 255)] + ((iy + j3) & 255)] + ((iz + k3) & 255)] + ((iw + l3) & 255)] + ((iv + h3) & 255)] + ((iu + g3) & 255) + offset] * 6;
 		c3 = f * (GRAD_6D[i] * x3 + GRAD_6D[i + 1] * y3 + GRAD_6D[i + 2] * z3 + GRAD_6D[i + 3] * w3 + GRAD_6D[i + 4] * v3 + GRAD_6D[i + 5] * u3);
 	}
 	else c3 = 0.f;
@@ -2116,17 +2116,17 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	if (f > 0.f)
 	{
 		f = (f * f * f);
-		unsigned char i = perm192[perm192[perm192[perm192[perm192[perm192[((ix + i4) & 255)] + ((iy + j4) & 255)] + ((iz + k4) & 255)] + ((iw + l4) & 255)] + ((iv + h4) & 255)] + ((iu + g4) & 255) + offset] * 6;
+		unsigned char i = m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[((ix + i4) & 255)] + ((iy + j4) & 255)] + ((iz + k4) & 255)] + ((iw + l4) & 255)] + ((iv + h4) & 255)] + ((iu + g4) & 255) + offset] * 6;
 		c4 = f * (GRAD_6D[i] * x4 + GRAD_6D[i + 1] * y4 + GRAD_6D[i + 2] * z4 + GRAD_6D[i + 3] * w4 + GRAD_6D[i + 4] * v4 + GRAD_6D[i + 5] * u4);
 	}
 	else c4 = 0.f;
 
 	// Contribution 5
-	f = 0.5f - x5*x5 - y5*y5 - z5*z5 - w5*w5 - v5 v5 - u5*u5;
+	f = 0.5f - x5*x5 - y5*y5 - z5*z5 - w5*w5 - v5*v5 - u5*u5;
 	if (f > 0.f)
 	{
 		f = (f * f * f);
-		unsigned char i = perm192[perm192[perm192[perm192[perm192[perm192[((ix + i5) & 255)] + ((iy + j5) & 255)] + ((iz + k5) & 255)] + ((iw + l5) & 255)] + ((iv + h5) & 255)] + ((iu + g5) & 255) + offset] * 6;
+		unsigned char i = m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[((ix + i5) & 255)] + ((iy + j5) & 255)] + ((iz + k5) & 255)] + ((iw + l5) & 255)] + ((iv + h5) & 255)] + ((iu + g5) & 255) + offset] * 6;
 		c5 = f * (GRAD_6D[i] * x5 + GRAD_6D[i + 1] * y5 + GRAD_6D[i + 2] * z5 + GRAD_6D[i + 3] * w5 + GRAD_6D[i + 4] * v5 + GRAD_6D[i + 5] * u5);
 	}
 	else c5 = 0.f;
@@ -2136,7 +2136,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	if (f > 0.f)
 	{
 		f = (f * f * f);
-		unsigned char i = perm192[perm192[perm192[perm192[perm192[perm192[((ix + 1) & 255)] + ((iy + 1) & 255)] + ((iz + 1) & 255)] + ((iw + 1) & 255)] + ((iv + 1) & 255)] + ((iu + 1) & 255) + offset] * 6;
+		unsigned char i = m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[m_perm192[((ix + 1) & 255)] + ((iy + 1) & 255)] + ((iz + 1) & 255)] + ((iw + 1) & 255)] + ((iv + 1) & 255)] + ((iu + 1) & 255) + offset] * 6;
 		c6 = f * (GRAD_6D[i] * x6 + GRAD_6D[i + 1] * y6 + GRAD_6D[i + 2] * z6 + GRAD_6D[i + 3] * w6 + GRAD_6D[i + 4] * v6 + GRAD_6D[i + 5] * u6);
 	}
 	else c6 = 0.f;
