@@ -209,15 +209,18 @@ public:
 
 	//4D
 	FN_DECIMAL GetSimplex(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const;
+  FN_DECIMAL GetSimplexFractal(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const;
 
 	FN_DECIMAL GetWhiteNoise(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const;
 	FN_DECIMAL GetWhiteNoiseInt(int x, int y, int z, int w) const;
 
   //5D
   FN_DECIMAL GetSimplex(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const;
+  FN_DECIMAL GetSimplexFractal(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const;
 
   //6D
   FN_DECIMAL GetSimplex(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const;
+  FN_DECIMAL GetSimplexFractal(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const;
 
 private:
 	unsigned char m_perm[512];
@@ -301,12 +304,22 @@ private:
 	void SingleGradientPerturb(unsigned char offset, FN_DECIMAL warpAmp, FN_DECIMAL frequency, FN_DECIMAL& x, FN_DECIMAL& y, FN_DECIMAL& z) const;
 
 	//4D
+  FN_DECIMAL SingleSimplexFractalFBM(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const;
+  FN_DECIMAL SingleSimplexFractalBillow(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const;
+  FN_DECIMAL SingleSimplexFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const;
 	FN_DECIMAL SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const;
+  
 
   //5D
+  FN_DECIMAL SingleSimplexFractalFBM(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const;
+  FN_DECIMAL SingleSimplexFractalBillow(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const;
+  FN_DECIMAL SingleSimplexFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const;
   FN_DECIMAL SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const;
 
   //6D
+  FN_DECIMAL SingleSimplexFractalFBM(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const;
+  FN_DECIMAL SingleSimplexFractalBillow(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const;
+  FN_DECIMAL SingleSimplexFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const;
   FN_DECIMAL SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const;
 
 	inline unsigned char Index2D_12(unsigned char offset, int x, int y) const;
