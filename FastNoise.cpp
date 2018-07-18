@@ -1964,7 +1964,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
     n5 = t*t * GradCoord5D(offset, i + 1, j + 1, k + 1, l + 1, h + 1, x5, y5, z5, w5, v5);
   }
 
-  return (n0 + n1 + n2 + n3 + n4 + n5) * norm; // TODO: Find value scaler
+  return (n0 + n1 + n2 + n3 + n4 + n5) * norm;
 }
 
 FN_DECIMAL FastNoise::GetSimplex(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const
