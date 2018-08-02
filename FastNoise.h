@@ -225,8 +225,6 @@ public:
 private:
 	unsigned char m_perm[512];
 	unsigned char m_perm12[512];
-  unsigned char m_perm80[512]; // For 5D Noise
-  unsigned char m_perm192[512]; // For 6D Noise
 
 	int m_seed = 1337;
 	FN_DECIMAL m_frequency = FN_DECIMAL(0.01);
@@ -325,11 +323,9 @@ private:
 	inline unsigned char Index2D_12(unsigned char offset, int x, int y) const;
 	inline unsigned char Index3D_12(unsigned char offset, int x, int y, int z) const;
 	inline unsigned char Index4D_32(unsigned char offset, int x, int y, int z, int w) const;
-  inline unsigned char Index5D_80(unsigned char offset, int x, int y, int z, int w, int v) const;
-  inline unsigned char Index6D_192(unsigned char offset, int x, int y, int z, int w, int v, int u) const;
   inline unsigned char Index2D_256(unsigned char offset, int x, int y) const;
 	inline unsigned char Index3D_256(unsigned char offset, int x, int y, int z) const;
-	inline unsigned char Index4D_256(unsigned char offset, int x, int y, int z, int w) const;
+  inline unsigned char Index4D_256(unsigned char offset, int x, int y, int z, int w) const;
 
 	inline FN_DECIMAL ValCoord2DFast(unsigned char offset, int x, int y) const;
 	inline FN_DECIMAL ValCoord3DFast(unsigned char offset, int x, int y, int z) const;

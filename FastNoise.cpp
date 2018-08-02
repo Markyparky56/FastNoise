@@ -38,31 +38,104 @@ const FN_DECIMAL GRAD_X[] =
 {
 	1, -1, 1, -1,
 	1, -1, 1, -1,
-	0, 0, 0, 0
+	0, 0, 0, 0,
+	1, -1, 0, 0 // Extras
 };
 const FN_DECIMAL GRAD_Y[] =
 {
 	1, 1, -1, -1,
 	0, 0, 0, 0,
-	1, -1, 1, -1
+	1, -1, 1, -1,
+	1, 1, -1, -1 // Extras
 };
 const FN_DECIMAL GRAD_Z[] =
 {
 	0, 0, 0, 0,
 	1, 1, -1, -1,
-	1, 1, -1, -1
+	1, 1, -1, -1,
+	0, 0, 1, -1 // Extras
 };
 
-const FN_DECIMAL GRAD_4D[] =
+const FN_DECIMAL GRAD_2D[] = {
+	1, 1,
+	-1, 1,
+	1, -1,
+	-1, -1,
+	0, 1,
+	0, -1,
+	1, 0
+	-1, 0,
+
+	0.5, 0.5,
+	-0.5, 0.5,
+	0.5, -0.5,
+	-0.5, -0.5,
+	0, 0.5,
+	0, -0.5,
+	0.5, 0,
+	-0.5, 0
+};
+
+const FN_DECIMAL GRAD_3D[] = 
 {
-	0,1,1,1,0,1,1,-1,0,1,-1,1,0,1,-1,-1,
-	0,-1,1,1,0,-1,1,-1,0,-1,-1,1,0,-1,-1,-1,
-	1,0,1,1,1,0,1,-1,1,0,-1,1,1,0,-1,-1,
-	-1,0,1,1,-1,0,1,-1,-1,0,-1,1,-1,0,-1,-1,
-	1,1,0,1,1,1,0,-1,1,-1,0,1,1,-1,0,-1,
-	-1,1,0,1,-1,1,0,-1,-1,-1,0,1,-1,-1,0,-1,
-	1,1,1,0,1,1,-1,0,1,-1,1,0,1,-1,-1,0,
-	-1,1,1,0,-1,1,-1,0,-1,-1,1,0,-1,-1,-1,0
+	1, 1, 0,
+	-1, 1, 0,
+	1, -1, 0,
+	-1, -1, 0,
+
+	1, 0, 1,
+	-1, 0, 1,
+	1, 0, -1,
+	-1, 0, -1,
+
+	0, 1, 1,
+	0, -1, 1,
+	0, 1, -1,
+	0, -1, -1,
+
+	1, 1, 0,
+	-1, 1, 0,
+	0, -1, 1,
+	0, -1, -1
+};
+
+const FN_DECIMAL GRAD_4D[] = 
+{
+	0, 1, 1, 1,
+	0, 1, 1,-1,
+	0, 1,-1, 1,
+	0, 1,-1,-1,
+	0,-1, 1, 1,
+	0,-1, 1,-1,
+	0,-1,-1, 1,
+	0,-1,-1,-1,
+
+	1, 0, 1, 1,
+	1, 0, 1,-1,
+	1, 0,-1, 1,
+	1, 0,-1,-1,
+ -1, 0, 1, 1,
+ -1, 0, 1,-1,
+ -1, 0,-1, 1,
+ -1, 0,-1,-1,
+
+	1, 1, 0, 1,
+	1, 1, 0,-1,
+	1,-1, 0, 1,
+	1,-1, 0,-1,
+ -1, 1, 0, 1,
+ -1, 1, 0,-1,
+ -1,-1, 0, 1,
+ -1,-1, 0,-1,
+
+	1, 1, 1, 0,
+	1, 1,-1, 0,
+	1,-1, 1, 0,
+	1,-1,-1, 0,
+ -1, 1, 1, 0,
+ -1, 1,-1, 0,
+ -1,-1, 1, 0,
+ -1,-1,-1, 0
 };
 
 const FN_DECIMAL GRAD_5D[] =
@@ -149,7 +222,7 @@ const FN_DECIMAL GRAD_5D[] =
 	0.000000,-1.000000,-1.000000,-1.000000,-1.000000
 };
 
-const FN_DECIMAL GRAD_6D[] =
+const FN_DECIMAL GRAD_6D[] = 
 {
 	1.000000,1.000000,1.000000,1.000000,1.000000,0.000000,
 	-1.000000,1.000000,1.000000,1.000000,1.000000,0.000000,
@@ -485,14 +558,12 @@ void FastNoise::SetSeed(int seed)
 
 	for (int j = 0; j < 256; j++)
 	{
-				int rng = (int)(gen() % (256 - j));
+		int rng = (int)(gen() % (256 - j));
 		int k = rng + j;
 		int l = m_perm[j];
 		m_perm[j] = m_perm[j + 256] = m_perm[k];
 		m_perm[k] = l;
 		m_perm12[j] = m_perm12[j + 256] = m_perm[j] % 12;
-		m_perm80[j] = m_perm80[j + 256] = m_perm[j] % 80;
-		m_perm192[j] = m_perm192[j + 256] = m_perm[j] % 192;
 	}
 }
 
@@ -535,14 +606,6 @@ unsigned char FastNoise::Index4D_32(unsigned char offset, int x, int y, int z, i
 {
 	return m_perm[(x & 0xff) + m_perm[(y & 0xff) + m_perm[(z & 0xff) + m_perm[(w & 0xff) + offset]]]] & 31;
 }
-unsigned char FastNoise::Index5D_80(unsigned char offset, int x, int y, int z, int w, int v) const
-{
-  return m_perm80[(x & 0xff) + m_perm[(y & 0xff) + m_perm[(z & 0xff) + m_perm[(w & 0xff) + m_perm[(v & 0xff) + offset]]]]];
-}
-unsigned char FastNoise::Index6D_192(unsigned char offset, int x, int y, int z, int w, int v, int u) const
-{
-  return m_perm192[(x & 0xff) + m_perm[(y & 0xff) + m_perm[(z & 0xff) + m_perm[(w & 0xff) + m_perm[(v & 0xff) + m_perm[(u & 0xff) + offset]]]]]];
-}
 unsigned char FastNoise::Index2D_256(unsigned char offset, int x, int y) const
 {
 	return m_perm[(x & 0xff) + m_perm[(y & 0xff) + offset]];
@@ -561,6 +624,9 @@ unsigned char FastNoise::Index4D_256(unsigned char offset, int x, int y, int z, 
 #define Y_PRIME 31337
 #define Z_PRIME 6971
 #define W_PRIME 1013
+#define W_PRIME2 8783 // Used for 5th and 6th dimensional simplex noise
+#define V_PRIME 3617
+#define U_PRIME 21557
 
 static FN_DECIMAL ValCoord2D(int seed, int x, int y)
 {
@@ -607,9 +673,9 @@ FN_DECIMAL FastNoise::GradCoord2D(unsigned char offset, int x, int y, FN_DECIMAL
 }
 FN_DECIMAL FastNoise::GradCoord3D(unsigned char offset, int x, int y, int z, FN_DECIMAL xd, FN_DECIMAL yd, FN_DECIMAL zd) const
 {
-	unsigned char lutPos = Index3D_12(offset, x, y, z);
+	unsigned char lutPos = Index3D_256(offset, x, y, z) & 0xf;
 
-	return xd*GRAD_X[lutPos] + yd*GRAD_Y[lutPos] + zd*GRAD_Z[lutPos];
+	return xd*GRAD_3D[lutPos] + yd*GRAD_3D[lutPos+1] + zd*GRAD_3D[lutPos+2];
 }
 FN_DECIMAL FastNoise::GradCoord4D(unsigned char offset, int x, int y, int z, int w, FN_DECIMAL xd, FN_DECIMAL yd, FN_DECIMAL zd, FN_DECIMAL wd) const
 {
@@ -619,16 +685,37 @@ FN_DECIMAL FastNoise::GradCoord4D(unsigned char offset, int x, int y, int z, int
 }
 FN_DECIMAL FastNoise::GradCoord5D(unsigned char offset, int x, int y, int z, int w, int v, FN_DECIMAL xd, FN_DECIMAL yd, FN_DECIMAL zd, FN_DECIMAL wd, FN_DECIMAL vd) const
 {
-  unsigned int lutPos = Index5D_80(offset, x, y, z, w, v) * 5;
+	unsigned int hash = m_seed + offset;
+	hash ^= x * X_PRIME;
+	hash ^= y * Y_PRIME;
+	hash ^= z * Z_PRIME;
+	hash ^= w * W_PRIME2;
+	hash ^= v * V_PRIME;
 
-  return xd * GRAD_5D[lutPos] + yd * GRAD_5D[lutPos + 1] + zd * GRAD_5D[lutPos + 2] + wd * GRAD_5D[lutPos + 3] + vd * GRAD_5D[lutPos + 4];
+	hash *= hash * 67043;
+	hash = (hash >> 16) ^ ~hash;
+
+	unsigned int lutPos = (((hash & 65535) > 13107) ? hash & 63 : ((hash & 15) + 64)) * 5;
+
+	return xd * GRAD_5D[lutPos] + yd * GRAD_5D[lutPos + 1] + zd * GRAD_5D[lutPos + 2] + wd * GRAD_5D[lutPos + 3] + vd * GRAD_5D[lutPos + 4];
 }
 
 FN_DECIMAL FastNoise::GradCoord6D(unsigned char offset, int x, int y, int z, int w, int v, int u, FN_DECIMAL xd, FN_DECIMAL yd, FN_DECIMAL zd, FN_DECIMAL wd, FN_DECIMAL vd, FN_DECIMAL ud) const
 {
-  unsigned int lutPos = Index6D_192(offset, x, y, z, w, v, u) * 6;
+	unsigned int hash = m_seed + offset;
+	hash ^= x * X_PRIME;
+	hash ^= y * Y_PRIME;
+	hash ^= z * Z_PRIME;
+	hash ^= w * W_PRIME2;
+	hash ^= v * V_PRIME;
+	hash ^= u * U_PRIME;
 
-  return xd * GRAD_6D[lutPos] + yd * GRAD_6D[lutPos + 1] + zd * GRAD_6D[lutPos + 2] + wd * GRAD_6D[lutPos + 3] + vd * GRAD_6D[lutPos + 4] + ud * GRAD_6D[lutPos + 5];
+	hash *= hash * 67043;
+	hash = (hash >> 16) ^ ~hash;
+
+	unsigned int lutPos = (((hash & 65535) > 21845) ? hash & 127 : ((hash & 63) + 128)) * 6;
+
+	return xd * GRAD_6D[lutPos] + yd * GRAD_6D[lutPos + 1] + zd * GRAD_6D[lutPos + 2] + wd * GRAD_6D[lutPos + 3] + vd * GRAD_6D[lutPos + 4] + ud * GRAD_6D[lutPos + 5];
 }
 
 FN_DECIMAL FastNoise::GetNoise(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z) const
@@ -1733,87 +1820,87 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 
 FN_DECIMAL FastNoise::GetSimplex(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const
 {
-  return SingleSimplex(0, x * m_frequency, y * m_frequency, z * m_frequency, w * m_frequency);
+	return SingleSimplex(0, x * m_frequency, y * m_frequency, z * m_frequency, w * m_frequency);
 }
 
 FN_DECIMAL FastNoise::GetSimplexFractal(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const
 {
-  x *= m_frequency;
-  y *= m_frequency;
-  z *= m_frequency;
-  w *= m_frequency;
+	x *= m_frequency;
+	y *= m_frequency;
+	z *= m_frequency;
+	w *= m_frequency;
 
-  switch (m_fractalType)
-  {
-  case FBM:
-    return SingleSimplexFractalFBM(x, y, z, w);
-  case Billow:
-    return SingleSimplexFractalBillow(x, y, z, w);
-  case RigidMulti:
-    return SingleSimplexFractalRigidMulti(x, y, z, w);
-  default:
-    return 0;
-  }
+	switch (m_fractalType)
+	{
+	case FBM:
+		return SingleSimplexFractalFBM(x, y, z, w);
+	case Billow:
+		return SingleSimplexFractalBillow(x, y, z, w);
+	case RigidMulti:
+		return SingleSimplexFractalRigidMulti(x, y, z, w);
+	default:
+		return 0;
+	}
 }
 
 FN_DECIMAL FastNoise::SingleSimplexFractalFBM(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const
 {
-  FN_DECIMAL sum = SingleSimplex(m_perm[0], x, y, z, w);
-  FN_DECIMAL amp = 1;
-  int i = 0;
+	FN_DECIMAL sum = SingleSimplex(m_perm[0], x, y, z, w);
+	FN_DECIMAL amp = 1;
+	int i = 0;
 
-  while (++i < m_octaves)
-  {
-    x *= m_lacunarity;
-    y *= m_lacunarity;
-    z *= m_lacunarity;
-    w *= m_lacunarity;
+	while (++i < m_octaves)
+	{
+		x *= m_lacunarity;
+		y *= m_lacunarity;
+		z *= m_lacunarity;
+		w *= m_lacunarity;
 
-    amp *= m_gain;
-    sum += SingleSimplex(m_perm[i], x, y, z, w) * amp;
-  }
+		amp *= m_gain;
+		sum += SingleSimplex(m_perm[i], x, y, z, w) * amp;
+	}
 
-  return sum * m_fractalBounding;
+	return sum * m_fractalBounding;
 }
 
 FN_DECIMAL FastNoise::SingleSimplexFractalBillow(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const
 {
-  FN_DECIMAL sum = FastAbs(SingleSimplex(m_perm[0], x, y, z, w)) * 2 - 1;
-  FN_DECIMAL amp = 1;
-  int i = 0;
+	FN_DECIMAL sum = FastAbs(SingleSimplex(m_perm[0], x, y, z, w)) * 2 - 1;
+	FN_DECIMAL amp = 1;
+	int i = 0;
 
-  while (++i < m_octaves)
-  {
-    x *= m_lacunarity;
-    y *= m_lacunarity;
-    z *= m_lacunarity;
-    w *= m_lacunarity;
+	while (++i < m_octaves)
+	{
+		x *= m_lacunarity;
+		y *= m_lacunarity;
+		z *= m_lacunarity;
+		w *= m_lacunarity;
 
-    amp *= m_gain;
-    sum += (FastAbs(SingleSimplex(m_perm[i], x, y, z, w)) * 2 - 1) * amp;
-  }
+		amp *= m_gain;
+		sum += (FastAbs(SingleSimplex(m_perm[i], x, y, z, w)) * 2 - 1) * amp;
+	}
 
-  return sum * m_fractalBounding;
+	return sum * m_fractalBounding;
 }
 
 FN_DECIMAL FastNoise::SingleSimplexFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w) const
 {
-  FN_DECIMAL sum = 1 - FastAbs(SingleSimplex(m_perm[0], x, y, z, w));
-  FN_DECIMAL amp = 1;
-  int i = 0;
+	FN_DECIMAL sum = 1 - FastAbs(SingleSimplex(m_perm[0], x, y, z, w));
+	FN_DECIMAL amp = 1;
+	int i = 0;
 
-  while (++i < m_octaves)
-  {
-    x *= m_lacunarity;
-    y *= m_lacunarity;
-    z *= m_lacunarity;
-    w *= m_lacunarity;
+	while (++i < m_octaves)
+	{
+		x *= m_lacunarity;
+		y *= m_lacunarity;
+		z *= m_lacunarity;
+		w *= m_lacunarity;
 
-    amp *= m_gain;
-    sum -= (1 - FastAbs(SingleSimplex(m_perm[i], x, y, z, w))) * amp;
-  }
+		amp *= m_gain;
+		sum -= (1 - FastAbs(SingleSimplex(m_perm[i], x, y, z, w))) * amp;
+	}
 
-  return sum;
+	return sum;
 }
 
 static const FN_DECIMAL F5 = (sqrt(FN_DECIMAL(6)) - 1) / 5;
@@ -1821,239 +1908,239 @@ static const FN_DECIMAL G5 = (6 - sqrt(FN_DECIMAL(6))) / 30;
 
 FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const
 {
-  static const FN_DECIMAL norm = FN_DECIMAL(10.733025427569862289390260016388);
+	static const FN_DECIMAL norm = FN_DECIMAL(10.31);
 
-  FN_DECIMAL n0, n1, n2, n3, n4, n5;
-  FN_DECIMAL t = (x + y + z + w + v) * F5;
-  int i = FastFloor(x + t);
-  int j = FastFloor(y + t);
-  int k = FastFloor(z + t);
-  int l = FastFloor(w + t);
-  int h = FastFloor(v + t);
-  t = (i + j + k + l + h) * G5;
-  FN_DECIMAL X0 = i - t;
-  FN_DECIMAL Y0 = j - t;
-  FN_DECIMAL Z0 = k - t;
-  FN_DECIMAL W0 = l - t;
-  FN_DECIMAL V0 = h - t;
-  FN_DECIMAL x0 = x - X0;
-  FN_DECIMAL y0 = y - Y0;
-  FN_DECIMAL z0 = z - Z0;
-  FN_DECIMAL w0 = w - W0;
-  FN_DECIMAL v0 = v - V0;
+	FN_DECIMAL n0, n1, n2, n3, n4, n5;
+	FN_DECIMAL t = (x + y + z + w + v) * F5;
+	int i = FastFloor(x + t);
+	int j = FastFloor(y + t);
+	int k = FastFloor(z + t);
+	int l = FastFloor(w + t);
+	int h = FastFloor(v + t);
+	t = (i + j + k + l + h) * G5;
+	FN_DECIMAL X0 = i - t;
+	FN_DECIMAL Y0 = j - t;
+	FN_DECIMAL Z0 = k - t;
+	FN_DECIMAL W0 = l - t;
+	FN_DECIMAL V0 = h - t;
+	FN_DECIMAL x0 = x - X0;
+	FN_DECIMAL y0 = y - Y0;
+	FN_DECIMAL z0 = z - Z0;
+	FN_DECIMAL w0 = w - W0;
+	FN_DECIMAL v0 = v - V0;
 
-  int rankx = 0;
-  int ranky = 0;
-  int rankz = 0;
-  int rankw = 0;
-  int rankv = 0;
+	int rankx = 0;
+	int ranky = 0;
+	int rankz = 0;
+	int rankw = 0;
+	int rankv = 0;
 
-  if (x0 > y0) rankx++; else ranky++;
-  if (x0 > z0) rankx++; else rankz++;
-  if (x0 > w0) rankx++; else rankw++;
-  if (x0 > v0) rankx++; else rankv++;
+	if (x0 > y0) rankx++; else ranky++;
+	if (x0 > z0) rankx++; else rankz++;
+	if (x0 > w0) rankx++; else rankw++;
+	if (x0 > v0) rankx++; else rankv++;
 
-  if (y0 > z0) ranky++; else rankz++;
-  if (y0 > w0) ranky++; else rankw++;
-  if (y0 > v0) ranky++; else rankv++;
+	if (y0 > z0) ranky++; else rankz++;
+	if (y0 > w0) ranky++; else rankw++;
+	if (y0 > v0) ranky++; else rankv++;
 
-  if (z0 > w0) rankz++; else rankw++;
-  if (z0 > v0) rankz++; else rankv++;
+	if (z0 > w0) rankz++; else rankw++;
+	if (z0 > v0) rankz++; else rankv++;
 
-  if (w0 > v0) rankw++; else rankv++;
+	if (w0 > v0) rankw++; else rankv++;
 
-  int i1 = rankx >= 4 ? 1 : 0;
-  int j1 = ranky >= 4 ? 1 : 0;
-  int k1 = rankz >= 4 ? 1 : 0;
-  int l1 = rankw >= 4 ? 1 : 0;
-  int h1 = rankv >= 4 ? 1 : 0;
+	int i1 = rankx >= 4 ? 1 : 0;
+	int j1 = ranky >= 4 ? 1 : 0;
+	int k1 = rankz >= 4 ? 1 : 0;
+	int l1 = rankw >= 4 ? 1 : 0;
+	int h1 = rankv >= 4 ? 1 : 0;
 
-  int i2 = rankx >= 3 ? 1 : 0;
-  int j2 = ranky >= 3 ? 1 : 0;
-  int k2 = rankz >= 3 ? 1 : 0;
-  int l2 = rankw >= 3 ? 1 : 0;
-  int h2 = rankv >= 3 ? 1 : 0;
+	int i2 = rankx >= 3 ? 1 : 0;
+	int j2 = ranky >= 3 ? 1 : 0;
+	int k2 = rankz >= 3 ? 1 : 0;
+	int l2 = rankw >= 3 ? 1 : 0;
+	int h2 = rankv >= 3 ? 1 : 0;
 
-  int i3 = rankx >= 2 ? 1 : 0;
-  int j3 = ranky >= 2 ? 1 : 0;
-  int k3 = rankz >= 2 ? 1 : 0;
-  int l3 = rankw >= 2 ? 1 : 0;
-  int h3 = rankv >= 2 ? 1 : 0;
+	int i3 = rankx >= 2 ? 1 : 0;
+	int j3 = ranky >= 2 ? 1 : 0;
+	int k3 = rankz >= 2 ? 1 : 0;
+	int l3 = rankw >= 2 ? 1 : 0;
+	int h3 = rankv >= 2 ? 1 : 0;
 
-  int i4 = rankx >= 1 ? 1 : 0;
-  int j4 = ranky >= 1 ? 1 : 0;
-  int k4 = rankz >= 1 ? 1 : 0;
-  int l4 = rankw >= 1 ? 1 : 0;
-  int h4 = rankv >= 1 ? 1 : 0;
+	int i4 = rankx >= 1 ? 1 : 0;
+	int j4 = ranky >= 1 ? 1 : 0;
+	int k4 = rankz >= 1 ? 1 : 0;
+	int l4 = rankw >= 1 ? 1 : 0;
+	int h4 = rankv >= 1 ? 1 : 0;
 
-  FN_DECIMAL x1 = x0 - i1 + G5;
-  FN_DECIMAL y1 = y0 - j1 + G5;
-  FN_DECIMAL z1 = z0 - k1 + G5;
-  FN_DECIMAL w1 = w0 - l1 + G5;
-  FN_DECIMAL v1 = v0 - h1 + G5;
+	FN_DECIMAL x1 = x0 - i1 + G5;
+	FN_DECIMAL y1 = y0 - j1 + G5;
+	FN_DECIMAL z1 = z0 - k1 + G5;
+	FN_DECIMAL w1 = w0 - l1 + G5;
+	FN_DECIMAL v1 = v0 - h1 + G5;
 
-  FN_DECIMAL x2 = x0 - i2 + 2 * G5;
-  FN_DECIMAL y2 = y0 - j2 + 2 * G5;
-  FN_DECIMAL z2 = z0 - k2 + 2 * G5;
-  FN_DECIMAL w2 = w0 - l2 + 2 * G5;
-  FN_DECIMAL v2 = v0 - h2 + 2 * G5;
+	FN_DECIMAL x2 = x0 - i2 + 2 * G5;
+	FN_DECIMAL y2 = y0 - j2 + 2 * G5;
+	FN_DECIMAL z2 = z0 - k2 + 2 * G5;
+	FN_DECIMAL w2 = w0 - l2 + 2 * G5;
+	FN_DECIMAL v2 = v0 - h2 + 2 * G5;
 
-  FN_DECIMAL x3 = x0 - i3 + 3 * G5;
-  FN_DECIMAL y3 = y0 - j3 + 3 * G5;
-  FN_DECIMAL z3 = z0 - k3 + 3 * G5;
-  FN_DECIMAL w3 = w0 - l3 + 3 * G5;
-  FN_DECIMAL v3 = v0 - h3 + 3 * G5;
+	FN_DECIMAL x3 = x0 - i3 + 3 * G5;
+	FN_DECIMAL y3 = y0 - j3 + 3 * G5;
+	FN_DECIMAL z3 = z0 - k3 + 3 * G5;
+	FN_DECIMAL w3 = w0 - l3 + 3 * G5;
+	FN_DECIMAL v3 = v0 - h3 + 3 * G5;
 
-  FN_DECIMAL x4 = x0 - i4 + 4 * G5;
-  FN_DECIMAL y4 = y0 - j4 + 4 * G5;
-  FN_DECIMAL z4 = z0 - k4 + 4 * G5;
-  FN_DECIMAL w4 = w0 - l4 + 4 * G5;
-  FN_DECIMAL v4 = v0 - h4 + 4 * G5;
+	FN_DECIMAL x4 = x0 - i4 + 4 * G5;
+	FN_DECIMAL y4 = y0 - j4 + 4 * G5;
+	FN_DECIMAL z4 = z0 - k4 + 4 * G5;
+	FN_DECIMAL w4 = w0 - l4 + 4 * G5;
+	FN_DECIMAL v4 = v0 - h4 + 4 * G5;
 
-  FN_DECIMAL x5 = x0 - 1 + 5 * G5;
-  FN_DECIMAL y5 = y0 - 1 + 5 * G5;
-  FN_DECIMAL z5 = z0 - 1 + 5 * G5;
-  FN_DECIMAL w5 = w0 - 1 + 5 * G5;
-  FN_DECIMAL v5 = v0 - 1 + 5 * G5;
+	FN_DECIMAL x5 = x0 - 1 + 5 * G5;
+	FN_DECIMAL y5 = y0 - 1 + 5 * G5;
+	FN_DECIMAL z5 = z0 - 1 + 5 * G5;
+	FN_DECIMAL w5 = w0 - 1 + 5 * G5;
+	FN_DECIMAL v5 = v0 - 1 + 5 * G5;
 
-  t = FN_DECIMAL(0.7) - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0;
-  if (t < 0) n0 = 0;
-  else
-  {
-    t *= t;
-    n0 = t*t * GradCoord5D(offset, i, j, k, l, h, x0, y0, z0, w0, v0);
-  }
+	t = FN_DECIMAL(0.7) - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0;
+	if (t < 0) n0 = 0;
+	else
+	{
+		t *= t;
+		n0 = t*t * GradCoord5D(offset, i, j, k, l, h, x0, y0, z0, w0, v0);
+	}
 
-  t = FN_DECIMAL(0.7) - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1;
-  if (t < 0) n1 = 0;
-  else
-  {
-    t *= t;
-    n1 = t*t * GradCoord5D(offset, i + i1, j + j1, k + k1, l + l1, h + h1, x1, y1, z1, w1, v1);
-  }
+	t = FN_DECIMAL(0.7) - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1;
+	if (t < 0) n1 = 0;
+	else
+	{
+		t *= t;
+		n1 = t*t * GradCoord5D(offset, i + i1, j + j1, k + k1, l + l1, h + h1, x1, y1, z1, w1, v1);
+	}
 
-  t = FN_DECIMAL(0.7) - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2;
-  if (t < 0) n2 = 0;
-  else
-  {
-    t *= t;
-    n2 = t*t * GradCoord5D(offset, i + i2, j + j2, k + k2, l + l2, h + h2, x2, y2, z2, w2, v2);
-  }
+	t = FN_DECIMAL(0.7) - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2;
+	if (t < 0) n2 = 0;
+	else
+	{
+		t *= t;
+		n2 = t*t * GradCoord5D(offset, i + i2, j + j2, k + k2, l + l2, h + h2, x2, y2, z2, w2, v2);
+	}
 
-  t = FN_DECIMAL(0.7) - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3;
-  if (t < 0) n3 = 0;
-  else
-  {
-    t *= t;
-    n3 = t*t * GradCoord5D(offset, i + i3, j + j3, k + k3, l + l3, h + h3, x3, y3, z3, w3, v3);
-  }
+	t = FN_DECIMAL(0.7) - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3;
+	if (t < 0) n3 = 0;
+	else
+	{
+		t *= t;
+		n3 = t*t * GradCoord5D(offset, i + i3, j + j3, k + k3, l + l3, h + h3, x3, y3, z3, w3, v3);
+	}
 
-  t = FN_DECIMAL(0.7) - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4;
-  if (t < 0) n4 = 0;
-  else
-  {
-    t *= t;
-    n4 = t*t * GradCoord5D(offset, i + i4, j + j4, k + k4, l + l4, h + h4, x4, y4, z4, w4, v4);
-  }
+	t = FN_DECIMAL(0.7) - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4;
+	if (t < 0) n4 = 0;
+	else
+	{
+		t *= t;
+		n4 = t*t * GradCoord5D(offset, i + i4, j + j4, k + k4, l + l4, h + h4, x4, y4, z4, w4, v4);
+	}
 
-  t = FN_DECIMAL(0.7) - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5;
-  if (t < 0) n5 = 0;
-  else
-  {
-    t *= t;
-    n5 = t*t * GradCoord5D(offset, i + 1, j + 1, k + 1, l + 1, h + 1, x5, y5, z5, w5, v5);
-  }
+	t = FN_DECIMAL(0.7) - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5;
+	if (t < 0) n5 = 0;
+	else
+	{
+		t *= t;
+		n5 = t*t * GradCoord5D(offset, i + 1, j + 1, k + 1, l + 1, h + 1, x5, y5, z5, w5, v5);
+	}
 
-  return (n0 + n1 + n2 + n3 + n4 + n5) * norm;
+	return (n0 + n1 + n2 + n3 + n4 + n5) * norm;
 }
 
 FN_DECIMAL FastNoise::GetSimplex(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const
 {
-  return SingleSimplex(0, x * m_frequency, y * m_frequency, z * m_frequency, w * m_frequency, v * m_frequency);
+	return SingleSimplex(0, x * m_frequency, y * m_frequency, z * m_frequency, w * m_frequency, v * m_frequency);
 }
 
 FN_DECIMAL FastNoise::GetSimplexFractal(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const
 {
-  x *= m_frequency;
-  y *= m_frequency;
-  z *= m_frequency;
-  w *= m_frequency;
-  v *= m_frequency;
+	x *= m_frequency;
+	y *= m_frequency;
+	z *= m_frequency;
+	w *= m_frequency;
+	v *= m_frequency;
 
-  switch (m_fractalType)
-  {
-  case FBM:
-    return SingleSimplexFractalFBM(x, y, z, w, v);
-  case Billow:
-    return SingleSimplexFractalBillow(x, y, z, w, v);
-  case RigidMulti:
-    return SingleSimplexFractalRigidMulti(x, y, z, w, v);
-  default:
-    return 0;
-  }
+	switch (m_fractalType)
+	{
+	case FBM:
+		return SingleSimplexFractalFBM(x, y, z, w, v);
+	case Billow:
+		return SingleSimplexFractalBillow(x, y, z, w, v);
+	case RigidMulti:
+		return SingleSimplexFractalRigidMulti(x, y, z, w, v);
+	default:
+		return 0;
+	}
 }
 
 FN_DECIMAL FastNoise::SingleSimplexFractalFBM(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const
 {
-  FN_DECIMAL sum = SingleSimplex(m_perm[0], x, y, z, w, v);
-  FN_DECIMAL amp = 1;
-  int i = 0;
+	FN_DECIMAL sum = SingleSimplex(m_perm[0], x, y, z, w, v);
+	FN_DECIMAL amp = 1;
+	int i = 0;
 
-  while (++i < m_octaves)
-  {
-    x *= m_lacunarity;
-    y *= m_lacunarity;
-    z *= m_lacunarity;
-    w *= m_lacunarity;
-    v *= m_lacunarity;
+	while (++i < m_octaves)
+	{
+		x *= m_lacunarity;
+		y *= m_lacunarity;
+		z *= m_lacunarity;
+		w *= m_lacunarity;
+		v *= m_lacunarity;
 
-    amp *= m_gain;
-    sum += SingleSimplex(m_perm[i], x, y, z, w, v) * amp;
-  }
+		amp *= m_gain;
+		sum += SingleSimplex(m_perm[i], x, y, z, w, v) * amp;
+	}
 
-  return sum * m_fractalBounding;
+	return sum * m_fractalBounding;
 }
 
 FN_DECIMAL FastNoise::SingleSimplexFractalBillow(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const
 {
-  FN_DECIMAL sum = FastAbs(SingleSimplex(m_perm[0], x, y, z, w, v)) * 2 - 1;
-  FN_DECIMAL amp = 1;
-  int i = 0;
+	FN_DECIMAL sum = FastAbs(SingleSimplex(m_perm[0], x, y, z, w, v)) * 2 - 1;
+	FN_DECIMAL amp = 1;
+	int i = 0;
 
-  while (++i < m_octaves)
-  {
-    x *= m_lacunarity;
-    y *= m_lacunarity;
-    z *= m_lacunarity;
-    w *= m_lacunarity;
-    v *= m_lacunarity;
+	while (++i < m_octaves)
+	{
+		x *= m_lacunarity;
+		y *= m_lacunarity;
+		z *= m_lacunarity;
+		w *= m_lacunarity;
+		v *= m_lacunarity;
 
-    amp *= m_gain;
-    sum += (FastAbs(SingleSimplex(m_perm[i], x, y, z, w, v)) * 2 - 1) * amp;
-  }
+		amp *= m_gain;
+		sum += (FastAbs(SingleSimplex(m_perm[i], x, y, z, w, v)) * 2 - 1) * amp;
+	}
 
-  return sum * m_fractalBounding;
+	return sum * m_fractalBounding;
 }
 
 FN_DECIMAL FastNoise::SingleSimplexFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const
 {
-  FN_DECIMAL sum = 1 - FastAbs(SingleSimplex(m_perm[0], x, y, z, w, v));
-  FN_DECIMAL amp = 1;
-  int i = 0;
+	FN_DECIMAL sum = 1 - FastAbs(SingleSimplex(m_perm[0], x, y, z, w, v));
+	FN_DECIMAL amp = 1;
+	int i = 0;
 
-  while (++i < m_octaves)
-  {
-    x *= m_lacunarity;
-    y *= m_lacunarity;
-    z *= m_lacunarity;
-    w *= m_lacunarity;
-    v *= m_lacunarity;
+	while (++i < m_octaves)
+	{
+		x *= m_lacunarity;
+		y *= m_lacunarity;
+		z *= m_lacunarity;
+		w *= m_lacunarity;
+		v *= m_lacunarity;
 
-    amp *= m_gain;
-    sum -= (1 - FastAbs(SingleSimplex(m_perm[i], x, y, z, w, v))) * amp;
-  }
+		amp *= m_gain;
+		sum -= (1 - FastAbs(SingleSimplex(m_perm[i], x, y, z, w, v))) * amp;
+	}
 
-  return sum;
+	return sum;
 }
 
 static const FN_DECIMAL F6 = (sqrt(FN_DECIMAL(7)) - 1) / 6;
@@ -2061,284 +2148,284 @@ static const FN_DECIMAL G6 = (7 - sqrt(FN_DECIMAL(7))) / 42;
 
 FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const
 {
-  static const FN_DECIMAL norm = FN_DECIMAL(9.6416958205676396846900898541065);
+	static const FN_DECIMAL norm = FN_DECIMAL(9.6);
 
-  FN_DECIMAL n0, n1, n2, n3, n4, n5, n6;
-  FN_DECIMAL t = (x + y + z + w + v + u) * F6;
-  int i = FastFloor(x + t);
-  int j = FastFloor(y + t);
-  int k = FastFloor(z + t);
-  int l = FastFloor(w + t);
-  int h = FastFloor(v + t);
-  int g = FastFloor(u + t);
-  t = (i + j + k + l + h + g) * G6;
-  FN_DECIMAL X0 = i - t;
-  FN_DECIMAL Y0 = j - t;
-  FN_DECIMAL Z0 = k - t;
-  FN_DECIMAL W0 = l - t;
-  FN_DECIMAL V0 = h - t;
-  FN_DECIMAL U0 = g - t;
-  FN_DECIMAL x0 = x - X0;
-  FN_DECIMAL y0 = y - Y0;
-  FN_DECIMAL z0 = z - Z0;
-  FN_DECIMAL w0 = w - W0;
-  FN_DECIMAL v0 = v - V0;
-  FN_DECIMAL u0 = u - U0;
+	FN_DECIMAL n0, n1, n2, n3, n4, n5, n6;
+	FN_DECIMAL t = (x + y + z + w + v + u) * F6;
+	int i = FastFloor(x + t);
+	int j = FastFloor(y + t);
+	int k = FastFloor(z + t);
+	int l = FastFloor(w + t);
+	int h = FastFloor(v + t);
+	int g = FastFloor(u + t);
+	t = (i + j + k + l + h + g) * G6;
+	FN_DECIMAL X0 = i - t;
+	FN_DECIMAL Y0 = j - t;
+	FN_DECIMAL Z0 = k - t;
+	FN_DECIMAL W0 = l - t;
+	FN_DECIMAL V0 = h - t;
+	FN_DECIMAL U0 = g - t;
+	FN_DECIMAL x0 = x - X0;
+	FN_DECIMAL y0 = y - Y0;
+	FN_DECIMAL z0 = z - Z0;
+	FN_DECIMAL w0 = w - W0;
+	FN_DECIMAL v0 = v - V0;
+	FN_DECIMAL u0 = u - U0;
 
-  int rankx = 0;
-  int ranky = 0;
-  int rankz = 0;
-  int rankw = 0;
-  int rankv = 0;
-  int ranku = 0;
+	int rankx = 0;
+	int ranky = 0;
+	int rankz = 0;
+	int rankw = 0;
+	int rankv = 0;
+	int ranku = 0;
 
-  if (x0 > y0) rankx++; else ranky++;
-  if (x0 > z0) rankx++; else rankz++;
-  if (x0 > w0) rankx++; else rankw++;
-  if (x0 > v0) rankx++; else rankv++;
-  if (x0 > u0) rankx++; else ranku++;
+	if (x0 > y0) rankx++; else ranky++;
+	if (x0 > z0) rankx++; else rankz++;
+	if (x0 > w0) rankx++; else rankw++;
+	if (x0 > v0) rankx++; else rankv++;
+	if (x0 > u0) rankx++; else ranku++;
 
-  if (y0 > z0) ranky++; else rankz++;
-  if (y0 > w0) ranky++; else rankw++;
-  if (y0 > v0) ranky++; else rankv++;
-  if (y0 > u0) ranky++; else ranku++;
+	if (y0 > z0) ranky++; else rankz++;
+	if (y0 > w0) ranky++; else rankw++;
+	if (y0 > v0) ranky++; else rankv++;
+	if (y0 > u0) ranky++; else ranku++;
 
-  if (z0 > w0) rankz++; else rankw++;
-  if (z0 > v0) rankz++; else rankv++;
-  if (z0 > u0) rankz++; else ranku++;
+	if (z0 > w0) rankz++; else rankw++;
+	if (z0 > v0) rankz++; else rankv++;
+	if (z0 > u0) rankz++; else ranku++;
 
-  if (w0 > v0) rankw++; else rankv++;
-  if (w0 > u0) rankw++; else ranku++;
+	if (w0 > v0) rankw++; else rankv++;
+	if (w0 > u0) rankw++; else ranku++;
 
-  if (v0 > u0) rankv++; else ranku++;
+	if (v0 > u0) rankv++; else ranku++;
 
-  int i1 = rankx >= 5 ? 1 : 0;
-  int j1 = ranky >= 5 ? 1 : 0;
-  int k1 = rankz >= 5 ? 1 : 0;
-  int l1 = rankw >= 5 ? 1 : 0;
-  int h1 = rankv >= 5 ? 1 : 0;
-  int g1 = ranku >= 5 ? 1 : 0;
+	int i1 = rankx >= 5 ? 1 : 0;
+	int j1 = ranky >= 5 ? 1 : 0;
+	int k1 = rankz >= 5 ? 1 : 0;
+	int l1 = rankw >= 5 ? 1 : 0;
+	int h1 = rankv >= 5 ? 1 : 0;
+	int g1 = ranku >= 5 ? 1 : 0;
 
-  int i2 = rankx >= 4 ? 1 : 0;
-  int j2 = ranky >= 4 ? 1 : 0;
-  int k2 = rankz >= 4 ? 1 : 0;
-  int l2 = rankw >= 4 ? 1 : 0;
-  int h2 = rankv >= 4 ? 1 : 0;
-  int g2 = ranku >= 4 ? 1 : 0;
+	int i2 = rankx >= 4 ? 1 : 0;
+	int j2 = ranky >= 4 ? 1 : 0;
+	int k2 = rankz >= 4 ? 1 : 0;
+	int l2 = rankw >= 4 ? 1 : 0;
+	int h2 = rankv >= 4 ? 1 : 0;
+	int g2 = ranku >= 4 ? 1 : 0;
 
-  int i3 = rankx >= 3 ? 1 : 0;
-  int j3 = ranky >= 3 ? 1 : 0;
-  int k3 = rankz >= 3 ? 1 : 0;
-  int l3 = rankw >= 3 ? 1 : 0;
-  int h3 = rankv >= 3 ? 1 : 0;
-  int g3 = ranku >= 3 ? 1 : 0;
+	int i3 = rankx >= 3 ? 1 : 0;
+	int j3 = ranky >= 3 ? 1 : 0;
+	int k3 = rankz >= 3 ? 1 : 0;
+	int l3 = rankw >= 3 ? 1 : 0;
+	int h3 = rankv >= 3 ? 1 : 0;
+	int g3 = ranku >= 3 ? 1 : 0;
 
-  int i4 = rankx >= 2 ? 1 : 0;
-  int j4 = ranky >= 2 ? 1 : 0;
-  int k4 = rankz >= 2 ? 1 : 0;
-  int l4 = rankw >= 2 ? 1 : 0;
-  int h4 = rankv >= 2 ? 1 : 0;
-  int g4 = ranku >= 2 ? 1 : 0;
+	int i4 = rankx >= 2 ? 1 : 0;
+	int j4 = ranky >= 2 ? 1 : 0;
+	int k4 = rankz >= 2 ? 1 : 0;
+	int l4 = rankw >= 2 ? 1 : 0;
+	int h4 = rankv >= 2 ? 1 : 0;
+	int g4 = ranku >= 2 ? 1 : 0;
 
-  int i5 = rankx >= 1 ? 1 : 0;
-  int j5 = ranky >= 1 ? 1 : 0;
-  int k5 = rankz >= 1 ? 1 : 0;
-  int l5 = rankw >= 1 ? 1 : 0;
-  int h5 = rankv >= 1 ? 1 : 0;
-  int g5 = ranku >= 1 ? 1 : 0;
+	int i5 = rankx >= 1 ? 1 : 0;
+	int j5 = ranky >= 1 ? 1 : 0;
+	int k5 = rankz >= 1 ? 1 : 0;
+	int l5 = rankw >= 1 ? 1 : 0;
+	int h5 = rankv >= 1 ? 1 : 0;
+	int g5 = ranku >= 1 ? 1 : 0;
 
-  FN_DECIMAL x1 = x0 - i1 + G6;
-  FN_DECIMAL y1 = y0 - j1 + G6;
-  FN_DECIMAL z1 = z0 - k1 + G6;
-  FN_DECIMAL w1 = w0 - l1 + G6;
-  FN_DECIMAL v1 = v0 - h1 + G6;
-  FN_DECIMAL u1 = u0 - g1 + G6;
+	FN_DECIMAL x1 = x0 - i1 + G6;
+	FN_DECIMAL y1 = y0 - j1 + G6;
+	FN_DECIMAL z1 = z0 - k1 + G6;
+	FN_DECIMAL w1 = w0 - l1 + G6;
+	FN_DECIMAL v1 = v0 - h1 + G6;
+	FN_DECIMAL u1 = u0 - g1 + G6;
 
-  FN_DECIMAL x2 = x0 - i2 + 2 * G6;
-  FN_DECIMAL y2 = y0 - j2 + 2 * G6;
-  FN_DECIMAL z2 = z0 - k2 + 2 * G6;
-  FN_DECIMAL w2 = w0 - l2 + 2 * G6;
-  FN_DECIMAL v2 = v0 - h2 + 2 * G6;
-  FN_DECIMAL u2 = u0 - g2 + 2 * G6;
+	FN_DECIMAL x2 = x0 - i2 + 2 * G6;
+	FN_DECIMAL y2 = y0 - j2 + 2 * G6;
+	FN_DECIMAL z2 = z0 - k2 + 2 * G6;
+	FN_DECIMAL w2 = w0 - l2 + 2 * G6;
+	FN_DECIMAL v2 = v0 - h2 + 2 * G6;
+	FN_DECIMAL u2 = u0 - g2 + 2 * G6;
 
-  FN_DECIMAL x3 = x0 - i3 + 3 * G6;
-  FN_DECIMAL y3 = y0 - j3 + 3 * G6;
-  FN_DECIMAL z3 = z0 - k3 + 3 * G6;
-  FN_DECIMAL w3 = w0 - l3 + 3 * G6;
-  FN_DECIMAL v3 = v0 - h3 + 3 * G6;
-  FN_DECIMAL u3 = u0 - g3 + 3 * G6;
+	FN_DECIMAL x3 = x0 - i3 + 3 * G6;
+	FN_DECIMAL y3 = y0 - j3 + 3 * G6;
+	FN_DECIMAL z3 = z0 - k3 + 3 * G6;
+	FN_DECIMAL w3 = w0 - l3 + 3 * G6;
+	FN_DECIMAL v3 = v0 - h3 + 3 * G6;
+	FN_DECIMAL u3 = u0 - g3 + 3 * G6;
 
-  FN_DECIMAL x4 = x0 - i4 + 4 * G6;
-  FN_DECIMAL y4 = y0 - j4 + 4 * G6;
-  FN_DECIMAL z4 = z0 - k4 + 4 * G6;
-  FN_DECIMAL w4 = w0 - l4 + 4 * G6;
-  FN_DECIMAL v4 = v0 - h4 + 4 * G6;
-  FN_DECIMAL u4 = u0 - g4 + 4 * G6;
+	FN_DECIMAL x4 = x0 - i4 + 4 * G6;
+	FN_DECIMAL y4 = y0 - j4 + 4 * G6;
+	FN_DECIMAL z4 = z0 - k4 + 4 * G6;
+	FN_DECIMAL w4 = w0 - l4 + 4 * G6;
+	FN_DECIMAL v4 = v0 - h4 + 4 * G6;
+	FN_DECIMAL u4 = u0 - g4 + 4 * G6;
 
-  FN_DECIMAL x5 = x0 - i5 + 5 * G6;
-  FN_DECIMAL y5 = y0 - j5 + 5 * G6;
-  FN_DECIMAL z5 = z0 - k5 + 5 * G6;
-  FN_DECIMAL w5 = w0 - l5 + 5 * G6;
-  FN_DECIMAL v5 = v0 - h5 + 5 * G6;
-  FN_DECIMAL u5 = u0 - g5 + 5 * G6;
+	FN_DECIMAL x5 = x0 - i5 + 5 * G6;
+	FN_DECIMAL y5 = y0 - j5 + 5 * G6;
+	FN_DECIMAL z5 = z0 - k5 + 5 * G6;
+	FN_DECIMAL w5 = w0 - l5 + 5 * G6;
+	FN_DECIMAL v5 = v0 - h5 + 5 * G6;
+	FN_DECIMAL u5 = u0 - g5 + 5 * G6;
 
-  FN_DECIMAL x6 = x0 - 1 + 6 * G6;
-  FN_DECIMAL y6 = y0 - 1 + 6 * G6;
-  FN_DECIMAL z6 = z0 - 1 + 6 * G6;
-  FN_DECIMAL w6 = w0 - 1 + 6 * G6;
-  FN_DECIMAL v6 = v0 - 1 + 6 * G6;
-  FN_DECIMAL u6 = u0 - 1 + 6 * G6;
+	FN_DECIMAL x6 = x0 - 1 + 6 * G6;
+	FN_DECIMAL y6 = y0 - 1 + 6 * G6;
+	FN_DECIMAL z6 = z0 - 1 + 6 * G6;
+	FN_DECIMAL w6 = w0 - 1 + 6 * G6;
+	FN_DECIMAL v6 = v0 - 1 + 6 * G6;
+	FN_DECIMAL u6 = u0 - 1 + 6 * G6;
 
-  t = FN_DECIMAL(0.7) - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0 - u0 * u0;
-  if (t < 0) n0 = 0;
-  else
-  {
-    t *= t;
-    n0 = t*t * GradCoord6D(offset, i, j, k, l, h, g, x0, y0, z0, w0, v0, u0);
-  }
+	t = FN_DECIMAL(0.7) - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0 - u0 * u0;
+	if (t < 0) n0 = 0;
+	else
+	{
+		t *= t;
+		n0 = t*t * GradCoord6D(offset, i, j, k, l, h, g, x0, y0, z0, w0, v0, u0);
+	}
 
-  t = FN_DECIMAL(0.7) - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1 - u1 * u1;
-  if (t < 0) n1 = 0;
-  else
-  {
-    t *= t;
-    n1 = t*t * GradCoord6D(offset, i + i1, j + j1, k + k1, l + l1, h + h1, g + g1, x1, y1, z1, w1, v1, u1);
-  }
+	t = FN_DECIMAL(0.7) - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1 - u1 * u1;
+	if (t < 0) n1 = 0;
+	else
+	{
+		t *= t;
+		n1 = t*t * GradCoord6D(offset, i + i1, j + j1, k + k1, l + l1, h + h1, g + g1, x1, y1, z1, w1, v1, u1);
+	}
 
-  t = FN_DECIMAL(0.7) - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2 - u2 * u2;
-  if (t < 0) n2 = 0;
-  else
-  {
-    t *= t;
-    n2 = t*t * GradCoord6D(offset, i + i2, j + j2, k + k2, l + l2, h + h2, g + g2, x2, y2, z2, w2, v2, u2);
-  }
+	t = FN_DECIMAL(0.7) - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2 - u2 * u2;
+	if (t < 0) n2 = 0;
+	else
+	{
+		t *= t;
+		n2 = t*t * GradCoord6D(offset, i + i2, j + j2, k + k2, l + l2, h + h2, g + g2, x2, y2, z2, w2, v2, u2);
+	}
 
-  t = FN_DECIMAL(0.7) - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3 - u3 * u3;
-  if (t < 0) n3 = 0;
-  else
-  {
-    t *= t;
-    n3 = t*t * GradCoord6D(offset, i + i3, j + j3, k + k3, l + l3, h + h3, g + g3, x3, y3, z3, w3, v3, u3);
-  }
+	t = FN_DECIMAL(0.7) - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3 - u3 * u3;
+	if (t < 0) n3 = 0;
+	else
+	{
+		t *= t;
+		n3 = t*t * GradCoord6D(offset, i + i3, j + j3, k + k3, l + l3, h + h3, g + g3, x3, y3, z3, w3, v3, u3);
+	}
 
-  t = FN_DECIMAL(0.7) - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4 - u4 * u4;
-  if (t < 0) n4 = 0;
-  else
-  {
-    t *= t;
-    n4 = t*t * GradCoord6D(offset, i + i4, j + j4, k + k4, l + l4, h + h4, g + g4, x4, y4, z4, w4, v4, u4);
-  }
+	t = FN_DECIMAL(0.7) - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4 - u4 * u4;
+	if (t < 0) n4 = 0;
+	else
+	{
+		t *= t;
+		n4 = t*t * GradCoord6D(offset, i + i4, j + j4, k + k4, l + l4, h + h4, g + g4, x4, y4, z4, w4, v4, u4);
+	}
 
-  t = FN_DECIMAL(0.7) - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5 - u5 * u5;
-  if (t < 0) n5 = 0;
-  else
-  {
-    t *= t;
-    n5 = t*t * GradCoord6D(offset, i + i5, j + j5, k + k5, l + l5, h + h5, g + g5, x5, y5, z5, w5, v5, u5);
-  }
+	t = FN_DECIMAL(0.7) - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5 - u5 * u5;
+	if (t < 0) n5 = 0;
+	else
+	{
+		t *= t;
+		n5 = t*t * GradCoord6D(offset, i + i5, j + j5, k + k5, l + l5, h + h5, g + g5, x5, y5, z5, w5, v5, u5);
+	}
 
-  t = FN_DECIMAL(0.7) - x6 * x6 - y6 * y6 - z6 * z6 - w6 * w6 - v6 * v6 - u6 * u6;
-  if (t < 0) n6 = 0;
-  else
-  {
-    t *= t;
-    n6 = t*t * GradCoord6D(offset, i + 1, j + 1, k + 1, l + 1, h + 1, g + 1, x6, y6, z6, w6, v6, u6);
-  }
+	t = FN_DECIMAL(0.7) - x6 * x6 - y6 * y6 - z6 * z6 - w6 * w6 - v6 * v6 - u6 * u6;
+	if (t < 0) n6 = 0;
+	else
+	{
+		t *= t;
+		n6 = t*t * GradCoord6D(offset, i + 1, j + 1, k + 1, l + 1, h + 1, g + 1, x6, y6, z6, w6, v6, u6);
+	}
 
-  return (n0 + n1 + n2 + n3 + n4 + n5 + n6) * norm; // TODO: Find value scaler
+	return (n0 + n1 + n2 + n3 + n4 + n5 + n6) * norm; // TODO: Find value scaler
 }
 
 FN_DECIMAL FastNoise::GetSimplex(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const
 {
-  return SingleSimplex(0, x * m_frequency, y * m_frequency, z * m_frequency, w * m_frequency, v * m_frequency, u * m_frequency);
+	return SingleSimplex(0, x * m_frequency, y * m_frequency, z * m_frequency, w * m_frequency, v * m_frequency, u * m_frequency);
 }
 
 FN_DECIMAL FastNoise::GetSimplexFractal(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const
 {
-  x *= m_frequency;
-  y *= m_frequency;
-  z *= m_frequency;
-  w *= m_frequency;
-  v *= m_frequency;
-  u *= m_frequency;
+	x *= m_frequency;
+	y *= m_frequency;
+	z *= m_frequency;
+	w *= m_frequency;
+	v *= m_frequency;
+	u *= m_frequency;
 
-  switch (m_fractalType)
-  {
-  case FBM:
-    return SingleSimplexFractalFBM(x, y, z, w, v, u);
-  case Billow:
-    return SingleSimplexFractalBillow(x, y, z, w, v, u);
-  case RigidMulti:
-    return SingleSimplexFractalRigidMulti(x, y, z, w, v, u);
-  default:
-    return 0;
-  }
+	switch (m_fractalType)
+	{
+	case FBM:
+		return SingleSimplexFractalFBM(x, y, z, w, v, u);
+	case Billow:
+		return SingleSimplexFractalBillow(x, y, z, w, v, u);
+	case RigidMulti:
+		return SingleSimplexFractalRigidMulti(x, y, z, w, v, u);
+	default:
+		return 0;
+	}
 }
 
 FN_DECIMAL FastNoise::SingleSimplexFractalFBM(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const
 {
-  FN_DECIMAL sum = SingleSimplex(m_perm[0], x, y, z, w, v, u);
-  FN_DECIMAL amp = 1;
-  int i = 0;
+	FN_DECIMAL sum = SingleSimplex(m_perm[0], x, y, z, w, v, u);
+	FN_DECIMAL amp = 1;
+	int i = 0;
 
-  while (++i < m_octaves)
-  {
-    x *= m_lacunarity;
-    y *= m_lacunarity;
-    z *= m_lacunarity;
-    w *= m_lacunarity;
-    v *= m_lacunarity;
-    u *= m_lacunarity;
+	while (++i < m_octaves)
+	{
+		x *= m_lacunarity;
+		y *= m_lacunarity;
+		z *= m_lacunarity;
+		w *= m_lacunarity;
+		v *= m_lacunarity;
+		u *= m_lacunarity;
 
-    amp *= m_gain;
-    sum += SingleSimplex(m_perm[i], x, y, z, w, v, u) * amp;
-  }
+		amp *= m_gain;
+		sum += SingleSimplex(m_perm[i], x, y, z, w, v, u) * amp;
+	}
 
-  return sum * m_fractalBounding;
+	return sum * m_fractalBounding;
 }
 
 FN_DECIMAL FastNoise::SingleSimplexFractalBillow(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const
 {
-  FN_DECIMAL sum = FastAbs(SingleSimplex(m_perm[0], x, y, z, w, v, u)) * 2 - 1;
-  FN_DECIMAL amp = 1;
-  int i = 0;
+	FN_DECIMAL sum = FastAbs(SingleSimplex(m_perm[0], x, y, z, w, v, u)) * 2 - 1;
+	FN_DECIMAL amp = 1;
+	int i = 0;
 
-  while (++i < m_octaves)
-  {
-    x *= m_lacunarity;
-    y *= m_lacunarity;
-    z *= m_lacunarity;
-    w *= m_lacunarity;
-    v *= m_lacunarity;
-    u *= m_lacunarity;
+	while (++i < m_octaves)
+	{
+		x *= m_lacunarity;
+		y *= m_lacunarity;
+		z *= m_lacunarity;
+		w *= m_lacunarity;
+		v *= m_lacunarity;
+		u *= m_lacunarity;
 
-    amp *= m_gain;
-    sum += (FastAbs(SingleSimplex(m_perm[i], x, y, z, w, v, u)) * 2 - 1) * amp;
-  }
+		amp *= m_gain;
+		sum += (FastAbs(SingleSimplex(m_perm[i], x, y, z, w, v, u)) * 2 - 1) * amp;
+	}
 
-  return sum * m_fractalBounding;
+	return sum * m_fractalBounding;
 }
 
 FN_DECIMAL FastNoise::SingleSimplexFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const
 {
-  FN_DECIMAL sum = 1 - FastAbs(SingleSimplex(m_perm[0], x, y, z, w, v, u));
-  FN_DECIMAL amp = 1;
-  int i = 0;
+	FN_DECIMAL sum = 1 - FastAbs(SingleSimplex(m_perm[0], x, y, z, w, v, u));
+	FN_DECIMAL amp = 1;
+	int i = 0;
 
-  while (++i < m_octaves)
-  {
-    x *= m_lacunarity;
-    y *= m_lacunarity;
-    z *= m_lacunarity;
-    w *= m_lacunarity;
-    v *= m_lacunarity;
-    u *= m_lacunarity;
+	while (++i < m_octaves)
+	{
+		x *= m_lacunarity;
+		y *= m_lacunarity;
+		z *= m_lacunarity;
+		w *= m_lacunarity;
+		v *= m_lacunarity;
+		u *= m_lacunarity;
 
-    amp *= m_gain;
-    sum -= (1 - FastAbs(SingleSimplex(m_perm[i], x, y, z, w, v, u))) * amp;
-  }
+		amp *= m_gain;
+		sum -= (1 - FastAbs(SingleSimplex(m_perm[i], x, y, z, w, v, u))) * amp;
+	}
 
-  return sum;
+	return sum;
 }
 
 // Cubic Noise
