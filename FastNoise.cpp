@@ -1908,7 +1908,7 @@ static const FN_DECIMAL G5 = (6 - sqrt(FN_DECIMAL(6))) / 30;
 
 FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v) const
 {
-	static const FN_DECIMAL norm = FN_DECIMAL(10.31);
+	static const FN_DECIMAL norm = FN_DECIMAL(10.2);
 
 	FN_DECIMAL n0, n1, n2, n3, n4, n5;
 	FN_DECIMAL t = (x + y + z + w + v) * F5;
