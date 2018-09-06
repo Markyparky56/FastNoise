@@ -2003,7 +2003,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	FN_DECIMAL w5 = w0 - 1 + 5 * G5;
 	FN_DECIMAL v5 = v0 - 1 + 5 * G5;
 
-	t = FN_DECIMAL(0.7) - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0;
+	t = FN_DECIMAL(0.65) - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0;
 	if (t < 0) n0 = 0;
 	else
 	{
@@ -2011,7 +2011,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n0 = t*t * GradCoord5D(offset, i, j, k, l, h, x0, y0, z0, w0, v0);
 	}
 
-	t = FN_DECIMAL(0.7) - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1;
+	t = FN_DECIMAL(0.65) - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1;
 	if (t < 0) n1 = 0;
 	else
 	{
@@ -2019,7 +2019,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n1 = t*t * GradCoord5D(offset, i + i1, j + j1, k + k1, l + l1, h + h1, x1, y1, z1, w1, v1);
 	}
 
-	t = FN_DECIMAL(0.7) - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2;
+	t = FN_DECIMAL(0.65) - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2;
 	if (t < 0) n2 = 0;
 	else
 	{
@@ -2027,7 +2027,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n2 = t*t * GradCoord5D(offset, i + i2, j + j2, k + k2, l + l2, h + h2, x2, y2, z2, w2, v2);
 	}
 
-	t = FN_DECIMAL(0.7) - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3;
+	t = FN_DECIMAL(0.65) - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3;
 	if (t < 0) n3 = 0;
 	else
 	{
@@ -2035,7 +2035,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n3 = t*t * GradCoord5D(offset, i + i3, j + j3, k + k3, l + l3, h + h3, x3, y3, z3, w3, v3);
 	}
 
-	t = FN_DECIMAL(0.7) - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4;
+	t = FN_DECIMAL(0.65) - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4;
 	if (t < 0) n4 = 0;
 	else
 	{
@@ -2043,7 +2043,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n4 = t*t * GradCoord5D(offset, i + i4, j + j4, k + k4, l + l4, h + h4, x4, y4, z4, w4, v4);
 	}
 
-	t = FN_DECIMAL(0.7) - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5;
+	t = FN_DECIMAL(0.65) - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5;
 	if (t < 0) n5 = 0;
 	else
 	{
@@ -2276,7 +2276,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	FN_DECIMAL v6 = v0 - 1 + 6 * G6;
 	FN_DECIMAL u6 = u0 - 1 + 6 * G6;
 
-	t = FN_DECIMAL(0.7) - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0 - u0 * u0;
+	t = FN_DECIMAL(0.65) - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0 - u0 * u0;
 	if (t < 0) n0 = 0;
 	else
 	{
@@ -2284,7 +2284,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n0 = t*t * GradCoord6D(offset, i, j, k, l, h, g, x0, y0, z0, w0, v0, u0);
 	}
 
-	t = FN_DECIMAL(0.7) - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1 - u1 * u1;
+	t = FN_DECIMAL(0.65) - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1 - u1 * u1;
 	if (t < 0) n1 = 0;
 	else
 	{
@@ -2292,7 +2292,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n1 = t*t * GradCoord6D(offset, i + i1, j + j1, k + k1, l + l1, h + h1, g + g1, x1, y1, z1, w1, v1, u1);
 	}
 
-	t = FN_DECIMAL(0.7) - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2 - u2 * u2;
+	t = FN_DECIMAL(0.65) - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2 - u2 * u2;
 	if (t < 0) n2 = 0;
 	else
 	{
@@ -2300,7 +2300,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n2 = t*t * GradCoord6D(offset, i + i2, j + j2, k + k2, l + l2, h + h2, g + g2, x2, y2, z2, w2, v2, u2);
 	}
 
-	t = FN_DECIMAL(0.7) - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3 - u3 * u3;
+	t = FN_DECIMAL(0.65) - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3 - u3 * u3;
 	if (t < 0) n3 = 0;
 	else
 	{
@@ -2308,7 +2308,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n3 = t*t * GradCoord6D(offset, i + i3, j + j3, k + k3, l + l3, h + h3, g + g3, x3, y3, z3, w3, v3, u3);
 	}
 
-	t = FN_DECIMAL(0.7) - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4 - u4 * u4;
+	t = FN_DECIMAL(0.65) - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4 - u4 * u4;
 	if (t < 0) n4 = 0;
 	else
 	{
@@ -2316,7 +2316,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n4 = t*t * GradCoord6D(offset, i + i4, j + j4, k + k4, l + l4, h + h4, g + g4, x4, y4, z4, w4, v4, u4);
 	}
 
-	t = FN_DECIMAL(0.7) - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5 - u5 * u5;
+	t = FN_DECIMAL(0.65) - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5 - u5 * u5;
 	if (t < 0) n5 = 0;
 	else
 	{
@@ -2324,7 +2324,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n5 = t*t * GradCoord6D(offset, i + i5, j + j5, k + k5, l + l5, h + h5, g + g5, x5, y5, z5, w5, v5, u5);
 	}
 
-	t = FN_DECIMAL(0.7) - x6 * x6 - y6 * y6 - z6 * z6 - w6 * w6 - v6 * v6 - u6 * u6;
+	t = FN_DECIMAL(0.65) - x6 * x6 - y6 * y6 - z6 * z6 - w6 * w6 - v6 * v6 - u6 * u6;
 	if (t < 0) n6 = 0;
 	else
 	{
