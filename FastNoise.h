@@ -45,7 +45,7 @@ typedef float FN_DECIMAL;
 class FastNoise
 {
 public:
-	explicit FastNoise(int seed = 1337) { SetSeed(seed); CalculateFractalBounding(); }
+  explicit FastNoise(int seed = 1337) { SetSeed(seed); CalculateFractalBounding(); CalculateFractalExponents(); }
 
 	enum NoiseType { Value, ValueFractal, Perlin, PerlinFractal, Simplex, SimplexFractal, Cellular, WhiteNoise, Cubic, CubicFractal };
 	enum Interp { Linear, Hermite, Quintic };
@@ -88,14 +88,14 @@ public:
 
 	// Sets octave count for all fractal noise types
 	// Default: 3
-	void SetFractalOctaves(int octaves) { m_octaves = octaves; CalculateFractalBounding(); }
+  void SetFractalOctaves(int octaves) { m_octaves = octaves; CalculateFractalBounding(); CalculateFractalExponents(); }
 
 	// Returns octave count for all fractal noise types
 	int GetFractalOctaves() const { return m_octaves; }
 	
 	// Sets octave lacunarity for all fractal noise types
 	// Default: 2.0
-	void SetFractalLacunarity(FN_DECIMAL lacunarity) { m_lacunarity = lacunarity; }
+	void SetFractalLacunarity(FN_DECIMAL lacunarity) { m_lacunarity = lacunarity; CalculateFractalExponents(); }
 
 	// Returns octave lacunarity for all fractal noise types
 	FN_DECIMAL GetFractalLacunarity() const { return m_lacunarity; }
@@ -227,6 +227,7 @@ private:
 	FN_DECIMAL m_gain = FN_DECIMAL(0.5);
 	FractalType m_fractalType = FBM;
 	FN_DECIMAL m_fractalBounding;
+  FN_DECIMAL *m_fractalExponents = nullptr;
 
 	CellularDistanceFunction m_cellularDistanceFunction = Euclidean;
 	CellularReturnType m_cellularReturnType = CellValue;
@@ -238,6 +239,7 @@ private:
 	FN_DECIMAL m_gradientPerturbAmp = FN_DECIMAL(1);
 
 	void CalculateFractalBounding();
+  void CalculateFractalExponents();
 
 	//2D
 	FN_DECIMAL SingleValueFractalFBM(FN_DECIMAL x, FN_DECIMAL y) const;

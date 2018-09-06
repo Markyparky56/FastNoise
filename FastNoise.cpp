@@ -193,6 +193,10 @@ static FN_DECIMAL CubicLerp(FN_DECIMAL a, FN_DECIMAL b, FN_DECIMAL c, FN_DECIMAL
 	FN_DECIMAL p = (d - c) - (a - b);
 	return t * t * t * p + t * t * ((a - b) - p) + t * (c - a) + b;
 }
+static FN_DECIMAL Clamp(FN_DECIMAL value, FN_DECIMAL min, FN_DECIMAL max)
+{
+  return std::max(min, std::min(value, max));
+}
 
 void FastNoise::SetSeed(int seed)
 {
@@ -224,6 +228,18 @@ void FastNoise::CalculateFractalBounding()
 		amp *= m_gain;
 	}
 	m_fractalBounding = 1.0f / ampFractal;
+}
+
+void FastNoise::CalculateFractalExponents()
+{
+  if (m_fractalExponents) delete[] m_fractalExponents;
+  m_fractalExponents = new FN_DECIMAL[m_octaves + 1];
+  FN_DECIMAL frequency = 1.0;
+  for (int i = 0; i < m_octaves; i++)
+  {
+    m_fractalExponents[i] = std::pow(frequency, -1.0);
+    frequency *= m_lacunarity;
+  }
 }
 
 void FastNoise::SetCellularDistance2Indices(int cellularDistanceIndex0, int cellularDistanceIndex1)
@@ -578,21 +594,29 @@ FN_DECIMAL FastNoise::SingleValueFractalBillow(FN_DECIMAL x, FN_DECIMAL y, FN_DE
 
 FN_DECIMAL FastNoise::SingleValueFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z) const
 {
-	FN_DECIMAL sum = 1 - FastAbs(SingleValue(m_perm[0], x, y, z));
-	FN_DECIMAL amp = 1;
-	int i = 0;
+  FN_DECIMAL signal = 1 - FastAbs(SingleValue(m_perm[0], x, y, z));
+  signal *= signal;
+  FN_DECIMAL sum = signal * m_fractalExponents[0];
+  FN_DECIMAL weight = signal * m_gain;
+  Clamp(weight, 0.0, 1.0);
+  int i = 0;
 
-	while (++i < m_octaves)
-	{
-		x *= m_lacunarity;
-		y *= m_lacunarity;
-		z *= m_lacunarity;
+  while (++i < m_octaves)
+  {
+    x *= m_lacunarity;
+    y *= m_lacunarity;
+    z *= m_lacunarity;
 
-		amp *= m_gain;
-		sum -= (1 - FastAbs(SingleValue(m_perm[i], x, y, z))) * amp;
-	}
+    signal = 1 - FastAbs(SingleValue(m_perm[i], x, y, z));
+    signal *= signal;
+    signal *= weight;
+    weight = signal * m_gain;
+    Clamp(weight, 0.0, 1.0);
 
-	return sum;
+    sum += (signal * m_fractalExponents[i]);
+  }
+
+  return (sum * FN_DECIMAL(1.25)) - FN_DECIMAL(1.0);
 }
 
 FN_DECIMAL FastNoise::GetValue(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z) const
@@ -695,20 +719,28 @@ FN_DECIMAL FastNoise::SingleValueFractalBillow(FN_DECIMAL x, FN_DECIMAL y) const
 
 FN_DECIMAL FastNoise::SingleValueFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y) const
 {
-	FN_DECIMAL sum = 1 - FastAbs(SingleValue(m_perm[0], x, y));
-	FN_DECIMAL amp = 1;
-	int i = 0;
+  FN_DECIMAL signal = 1 - FastAbs(SingleValue(m_perm[0], x, y));
+  signal *= signal;
+  FN_DECIMAL sum = signal * m_fractalExponents[0];
+  FN_DECIMAL weight = signal * m_gain;
+  Clamp(weight, 0.0, 1.0);
+  int i = 0;
 
-	while (++i < m_octaves)
-	{
-		x *= m_lacunarity;
-		y *= m_lacunarity;
+  while (++i < m_octaves)
+  {
+    x *= m_lacunarity;
+    y *= m_lacunarity;
 
-		amp *= m_gain;
-		sum -= (1 - FastAbs(SingleValue(m_perm[i], x, y))) * amp;
-	}
+    signal = 1 - FastAbs(SingleValue(m_perm[i], x, y));
+    signal *= signal;
+    signal *= weight;
+    weight = signal * m_gain;
+    Clamp(weight, 0.0, 1.0);
 
-	return sum;
+    sum += (signal * m_fractalExponents[i]);
+  }
+
+  return (sum * FN_DECIMAL(1.25)) - FN_DECIMAL(1.0);
 }
 
 FN_DECIMAL FastNoise::GetValue(FN_DECIMAL x, FN_DECIMAL y) const
@@ -806,21 +838,29 @@ FN_DECIMAL FastNoise::SinglePerlinFractalBillow(FN_DECIMAL x, FN_DECIMAL y, FN_D
 
 FN_DECIMAL FastNoise::SinglePerlinFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z) const
 {
-	FN_DECIMAL sum = 1 - FastAbs(SinglePerlin(m_perm[0], x, y, z));
-	FN_DECIMAL amp = 1;
-	int i = 0;
+  FN_DECIMAL signal = 1 - FastAbs(SinglePerlin(m_perm[0], x, y, z));
+  signal *= signal;
+  FN_DECIMAL sum = signal * m_fractalExponents[0];
+  FN_DECIMAL weight = signal * m_gain;
+  Clamp(weight, 0.0, 1.0);
+  int i = 0;
 
-	while (++i < m_octaves)
-	{
-		x *= m_lacunarity;
-		y *= m_lacunarity;
-		z *= m_lacunarity;
+  while (++i < m_octaves)
+  {
+    x *= m_lacunarity;
+    y *= m_lacunarity;
+    z *= m_lacunarity;
 
-		amp *= m_gain;
-		sum -= (1 - FastAbs(SinglePerlin(m_perm[i], x, y, z))) * amp;
-	}
+    signal = 1 - FastAbs(SinglePerlin(m_perm[i], x, y, z));
+    signal *= signal;
+    signal *= weight;
+    weight = signal * m_gain;
+    Clamp(weight, 0.0, 1.0);
 
-	return sum;
+    sum += (signal * m_fractalExponents[i]);
+  }
+
+  return (sum * FN_DECIMAL(1.25)) - FN_DECIMAL(1.0);
 }
 
 FN_DECIMAL FastNoise::GetPerlin(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z) const
@@ -931,20 +971,28 @@ FN_DECIMAL FastNoise::SinglePerlinFractalBillow(FN_DECIMAL x, FN_DECIMAL y) cons
 
 FN_DECIMAL FastNoise::SinglePerlinFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y) const
 {
-	FN_DECIMAL sum = 1 - FastAbs(SinglePerlin(m_perm[0], x, y));
-	FN_DECIMAL amp = 1;
-	int i = 0;
+  FN_DECIMAL signal = 1 - FastAbs(SinglePerlin(m_perm[0], x, y));
+  signal *= signal;
+  FN_DECIMAL sum = signal * m_fractalExponents[0];
+  FN_DECIMAL weight = signal * m_gain;
+  Clamp(weight, 0.0, 1.0);
+  int i = 0;
 
-	while (++i < m_octaves)
-	{
-		x *= m_lacunarity;
-		y *= m_lacunarity;
+  while (++i < m_octaves)
+  {
+    x *= m_lacunarity;
+    y *= m_lacunarity;
 
-		amp *= m_gain;
-		sum -= (1 - FastAbs(SinglePerlin(m_perm[i], x, y))) * amp;
-	}
+    signal = 1 - FastAbs(SinglePerlin(m_perm[i], x, y));
+    signal *= signal;
+    signal *= weight;
+    weight = signal * m_gain;
+    Clamp(weight, 0.0, 1.0);
 
-	return sum;
+    sum += (signal * m_fractalExponents[i]);
+  }
+
+  return (sum * FN_DECIMAL(1.25)) - FN_DECIMAL(1.0);
 }
 
 FN_DECIMAL FastNoise::GetPerlin(FN_DECIMAL x, FN_DECIMAL y) const
@@ -1048,21 +1096,29 @@ FN_DECIMAL FastNoise::SingleSimplexFractalBillow(FN_DECIMAL x, FN_DECIMAL y, FN_
 
 FN_DECIMAL FastNoise::SingleSimplexFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z) const
 {
-	FN_DECIMAL sum = 1 - FastAbs(SingleSimplex(m_perm[0], x, y, z));
-	FN_DECIMAL amp = 1;
-	int i = 0;
+  FN_DECIMAL signal = 1 - FastAbs(SingleSimplex(m_perm[0], x, y, z));
+  signal *= signal;
+  FN_DECIMAL sum = signal * m_fractalExponents[0];
+  FN_DECIMAL weight = signal * m_gain;
+  Clamp(weight, 0.0, 1.0);
+  int i = 0;
 
-	while (++i < m_octaves)
-	{
-		x *= m_lacunarity;
-		y *= m_lacunarity;
-		z *= m_lacunarity;
+  while (++i < m_octaves)
+  {
+    x *= m_lacunarity;
+    y *= m_lacunarity;
+    z *= m_lacunarity;
 
-		amp *= m_gain;
-		sum -= (1 - FastAbs(SingleSimplex(m_perm[i], x, y, z))) * amp;
-	}
+    signal = 1 - FastAbs(SingleSimplex(m_perm[i], x, y, z));
+    signal *= signal;
+    signal *= weight;
+    weight = signal * m_gain;
+    Clamp(weight, 0.0, 1.0);
 
-	return sum;
+    sum += (signal * m_fractalExponents[i]);
+  }
+
+  return (sum * FN_DECIMAL(1.25)) - FN_DECIMAL(1.0);
 }
 
 FN_DECIMAL FastNoise::GetSimplex(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z) const
@@ -1226,20 +1282,28 @@ FN_DECIMAL FastNoise::SingleSimplexFractalBillow(FN_DECIMAL x, FN_DECIMAL y) con
 
 FN_DECIMAL FastNoise::SingleSimplexFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y) const
 {
-	FN_DECIMAL sum = 1 - FastAbs(SingleSimplex(m_perm[0], x, y));
-	FN_DECIMAL amp = 1;
-	int i = 0;
+  FN_DECIMAL signal = 1 - FastAbs(SingleSimplex(m_perm[0], x, y));
+  signal *= signal;
+  FN_DECIMAL sum = signal * m_fractalExponents[0];
+  FN_DECIMAL weight = signal * m_gain;
+  Clamp(weight, 0.0, 1.0);
+  int i = 0;
 
-	while (++i < m_octaves)
-	{
-		x *= m_lacunarity;
-		y *= m_lacunarity;
+  while (++i < m_octaves)
+  {
+    x *= m_lacunarity;
+    y *= m_lacunarity;
 
-		amp *= m_gain;
-		sum -= (1 - FastAbs(SingleSimplex(m_perm[i], x, y))) * amp;
-	}
+    signal = 1 - FastAbs(SingleSimplex(m_perm[i], x, y));
+    signal *= signal;
+    signal *= weight;
+    weight = signal * m_gain;
+    Clamp(weight, 0.0, 1.0);
 
-	return sum;
+    sum += (signal * m_fractalExponents[i]);
+  }
+
+  return (sum * FN_DECIMAL(1.25)) - FN_DECIMAL(1.0);
 }
 
 FN_DECIMAL FastNoise::SingleSimplexFractalBlend(FN_DECIMAL x, FN_DECIMAL y) const
@@ -1493,21 +1557,29 @@ FN_DECIMAL FastNoise::SingleCubicFractalBillow(FN_DECIMAL x, FN_DECIMAL y, FN_DE
 
 FN_DECIMAL FastNoise::SingleCubicFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z) const
 {
-	FN_DECIMAL sum = 1 - FastAbs(SingleCubic(m_perm[0], x, y, z));
-	FN_DECIMAL amp = 1;
-	int i = 0;
+  FN_DECIMAL signal = 1 - FastAbs(SingleCubic(m_perm[0], x, y, z));
+  signal *= signal;
+  FN_DECIMAL sum = signal * m_fractalExponents[0];
+  FN_DECIMAL weight = signal * m_gain;
+  Clamp(weight, 0.0, 1.0);
+  int i = 0;
 
-	while (++i < m_octaves)
-	{
-		x *= m_lacunarity;
-		y *= m_lacunarity;
-		z *= m_lacunarity;
+  while (++i < m_octaves)
+  {
+    x *= m_lacunarity;
+    y *= m_lacunarity;
+    z *= m_lacunarity;
 
-		amp *= m_gain;
-		sum -= (1 - FastAbs(SingleCubic(m_perm[i], x, y, z))) * amp;
-	}
+    signal = 1 - FastAbs(SingleCubic(m_perm[i], x, y, z));
+    signal *= signal;
+    signal *= weight;
+    weight = signal * m_gain;
+    Clamp(weight, 0.0, 1.0);
 
-	return sum;
+    sum += (signal * m_fractalExponents[i]);
+  }
+
+  return (sum * FN_DECIMAL(1.25)) - FN_DECIMAL(1.0);
 }
 
 FN_DECIMAL FastNoise::GetCubic(FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z) const
@@ -1622,20 +1694,28 @@ FN_DECIMAL FastNoise::SingleCubicFractalBillow(FN_DECIMAL x, FN_DECIMAL y) const
 
 FN_DECIMAL FastNoise::SingleCubicFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y) const
 {
-	FN_DECIMAL sum = 1 - FastAbs(SingleCubic(m_perm[0], x, y));
-	FN_DECIMAL amp = 1;
-	int i = 0;
+  FN_DECIMAL signal = 1 - FastAbs(SingleCubic(m_perm[0], x, y));
+  signal *= signal;
+  FN_DECIMAL sum = signal * m_fractalExponents[0];
+  FN_DECIMAL weight = signal * m_gain;
+  Clamp(weight, 0.0, 1.0);
+  int i = 0;
 
-	while (++i < m_octaves)
-	{
-		x *= m_lacunarity;
-		y *= m_lacunarity;
+  while (++i < m_octaves)
+  {
+    x *= m_lacunarity;
+    y *= m_lacunarity;
 
-		amp *= m_gain;
-		sum -= (1 - FastAbs(SingleCubic(m_perm[i], x, y))) * amp;
-	}
+    signal = 1 - FastAbs(SingleSimplex(m_perm[i], x, y));
+    signal *= signal;
+    signal *= weight;
+    weight = signal * m_gain;
+    Clamp(weight, 0.0, 1.0);
 
-	return sum;
+    sum += (signal * m_fractalExponents[i]);
+  }
+
+  return (sum * FN_DECIMAL(1.25)) - FN_DECIMAL(1.0);
 }
 
 FN_DECIMAL FastNoise::GetCubic(FN_DECIMAL x, FN_DECIMAL y) const
