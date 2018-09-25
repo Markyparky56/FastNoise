@@ -39,64 +39,18 @@ const FN_DECIMAL GRAD_X[] =
 	1, -1, 1, -1,
 	1, -1, 1, -1,
 	0, 0, 0, 0,
-	1, -1, 0, 0 // Extras
 };
 const FN_DECIMAL GRAD_Y[] =
 {
 	1, 1, -1, -1,
 	0, 0, 0, 0,
 	1, -1, 1, -1,
-	1, 1, -1, -1 // Extras
 };
 const FN_DECIMAL GRAD_Z[] =
 {
 	0, 0, 0, 0,
 	1, 1, -1, -1,
 	1, 1, -1, -1,
-	0, 0, 1, -1 // Extras
-};
-
-const FN_DECIMAL GRAD_2D[] = {
-	1, 1,
-	-1, 1,
-	1, -1,
-	-1, -1,
-	0, 1,
-	0, -1,
-	1, 0
-	-1, 0,
-
-	0.5, 0.5,
-	-0.5, 0.5,
-	0.5, -0.5,
-	-0.5, -0.5,
-	0, 0.5,
-	0, -0.5,
-	0.5, 0,
-	-0.5, 0
-};
-
-const FN_DECIMAL GRAD_3D[] = 
-{
-	1, 1, 0,
-	-1, 1, 0,
-	1, -1, 0,
-	-1, -1, 0,
-
-	1, 0, 1,
-	-1, 0, 1,
-	1, 0, -1,
-	-1, 0, -1,
-
-	0, 1, 1,
-	0, -1, 1,
-	0, 1, -1,
-	0, -1, -1,
-
-	1, 1, 0,
-	-1, 1, 0,
-	0, -1, 1,
-	0, -1, -1
 };
 
 const FN_DECIMAL GRAD_4D[] = 
@@ -689,9 +643,9 @@ FN_DECIMAL FastNoise::GradCoord2D(unsigned char offset, int x, int y, FN_DECIMAL
 }
 FN_DECIMAL FastNoise::GradCoord3D(unsigned char offset, int x, int y, int z, FN_DECIMAL xd, FN_DECIMAL yd, FN_DECIMAL zd) const
 {
-	unsigned char lutPos = Index3D_256(offset, x, y, z) & 0xf;
+	unsigned char lutPos = Index3D_12(offset, x, y, z);
 
-	return xd*GRAD_3D[lutPos] + yd*GRAD_3D[lutPos+1] + zd*GRAD_3D[lutPos+2];
+	return xd*GRAD_X[lutPos] + yd*GRAD_Y[lutPos] + zd*GRAD_Z[lutPos];
 }
 FN_DECIMAL FastNoise::GradCoord4D(unsigned char offset, int x, int y, int z, int w, FN_DECIMAL xd, FN_DECIMAL yd, FN_DECIMAL zd, FN_DECIMAL wd) const
 {
