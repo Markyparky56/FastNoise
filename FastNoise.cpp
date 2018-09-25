@@ -546,9 +546,9 @@ static FN_DECIMAL CubicLerp(FN_DECIMAL a, FN_DECIMAL b, FN_DECIMAL c, FN_DECIMAL
 	FN_DECIMAL p = (d - c) - (a - b);
 	return t * t * t * p + t * t * ((a - b) - p) + t * (c - a) + b;
 }
-static FN_DECIMAL Clamp(FN_DECIMAL value, FN_DECIMAL min, FN_DECIMAL max)
+static void Clamp(FN_DECIMAL &value, FN_DECIMAL min, FN_DECIMAL max)
 {
-  return std::max(min, std::min(value, max));
+  value = std::max(min, std::min(value, max));
 }
 
 void FastNoise::SetSeed(int seed)
@@ -590,7 +590,7 @@ void FastNoise::CalculateFractalExponents()
   FN_DECIMAL frequency = 1.0;
   for (int i = 0; i < m_octaves; i++)
   {
-    m_fractalExponents[i] = std::pow(frequency, -1.0);
+    m_fractalExponents[i] = 1 / frequency; //std::pow(frequency, -1.0);
     frequency *= m_lacunarity;
   }
 }
@@ -1963,7 +1963,7 @@ FN_DECIMAL FastNoise::SingleSimplexFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y,
     z *= m_lacunarity;
     w *= m_lacunarity;
 
-    signal = 1 - FastAbs(SingleSimplex(m_perm[0], x, y, z, w));
+    signal = 1 - FastAbs(SingleSimplex(m_perm[i], x, y, z, w));
     signal *= signal;
     signal *= weight;
     weight = signal * m_gain;
@@ -2075,7 +2075,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 	FN_DECIMAL w5 = w0 - 1 + 5 * G5;
 	FN_DECIMAL v5 = v0 - 1 + 5 * G5;
 
-	t = FN_DECIMAL(0.65) - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0;
+	t = FN_DECIMAL(0.7) - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0 - v0 * v0;
 	if (t < 0) n0 = 0;
 	else
 	{
@@ -2083,7 +2083,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n0 = t*t * GradCoord5D(offset, i, j, k, l, h, x0, y0, z0, w0, v0);
 	}
 
-	t = FN_DECIMAL(0.65) - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1;
+	t = FN_DECIMAL(0.7) - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1 - v1 * v1;
 	if (t < 0) n1 = 0;
 	else
 	{
@@ -2091,7 +2091,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n1 = t*t * GradCoord5D(offset, i + i1, j + j1, k + k1, l + l1, h + h1, x1, y1, z1, w1, v1);
 	}
 
-	t = FN_DECIMAL(0.65) - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2;
+	t = FN_DECIMAL(0.7) - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2 - v2 * v2;
 	if (t < 0) n2 = 0;
 	else
 	{
@@ -2099,7 +2099,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n2 = t*t * GradCoord5D(offset, i + i2, j + j2, k + k2, l + l2, h + h2, x2, y2, z2, w2, v2);
 	}
 
-	t = FN_DECIMAL(0.65) - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3;
+	t = FN_DECIMAL(0.7) - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3 - v3 * v3;
 	if (t < 0) n3 = 0;
 	else
 	{
@@ -2107,7 +2107,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n3 = t*t * GradCoord5D(offset, i + i3, j + j3, k + k3, l + l3, h + h3, x3, y3, z3, w3, v3);
 	}
 
-	t = FN_DECIMAL(0.65) - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4;
+	t = FN_DECIMAL(0.7) - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4 - v4 * v4;
 	if (t < 0) n4 = 0;
 	else
 	{
@@ -2115,7 +2115,7 @@ FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIM
 		n4 = t*t * GradCoord5D(offset, i + i4, j + j4, k + k4, l + l4, h + h4, x4, y4, z4, w4, v4);
 	}
 
-	t = FN_DECIMAL(0.65) - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5;
+	t = FN_DECIMAL(0.7) - x5 * x5 - y5 * y5 - z5 * z5 - w5 * w5 - v5 * v5;
 	if (t < 0) n5 = 0;
 	else
 	{
@@ -2211,7 +2211,7 @@ FN_DECIMAL FastNoise::SingleSimplexFractalRigidMulti(FN_DECIMAL x, FN_DECIMAL y,
     w *= m_lacunarity;
     v *= m_lacunarity;
 
-    signal = 1 - FastAbs(SingleSimplex(m_perm[0], x, y, z, w, v));
+    signal = 1 - FastAbs(SingleSimplex(m_perm[i], x, y, z, w, v));
     signal *= signal;
     signal *= weight;
     weight = signal * m_gain;
@@ -2228,7 +2228,7 @@ static const FN_DECIMAL G6 = (7 - sqrt(FN_DECIMAL(7))) / 42;
 
 FN_DECIMAL FastNoise::SingleSimplex(unsigned char offset, FN_DECIMAL x, FN_DECIMAL y, FN_DECIMAL z, FN_DECIMAL w, FN_DECIMAL v, FN_DECIMAL u) const
 {
-	static const FN_DECIMAL norm = FN_DECIMAL(9.6);
+  static const FN_DECIMAL norm = FN_DECIMAL(14.4);
 
 	FN_DECIMAL n0, n1, n2, n3, n4, n5, n6;
 	FN_DECIMAL t = (x + y + z + w + v + u) * F6;
